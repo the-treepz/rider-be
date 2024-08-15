@@ -1,0 +1,123 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a node and typescript starter app. You can find out more about it at [https://enigmatic-wildwood-43336.herokuapp.com/](https://enigmatic-wildwood-43336.herokuapp.com/)",
+    "version": "1.0.0",
+    "title": "Starter",
+    "contact": {
+      "email": "oluwabukolatina@gmail.com"
+    }
+  },
+  "basePath": "/api/v1/dummy",
+  "tags": [
+    {
+      "name": "starter",
+      "description": "Everything about starter"
+    }
+  ],
+  "schemes": ["https"],
+  "paths": {
+    "/starter": {
+      "post": {
+        "tags": ["starter"],
+        "summary": "allows users to add a new entry in the database",
+        "description": "",
+        "operationId": "createStarter",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "starter to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Starter"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "starter created"
+          }
+        }
+      }
+    },
+    "/starter/{starterId}": {
+      "put": {
+        "tags": ["starter"],
+        "summary": "edit starter",
+        "description": "",
+        "operationId": "edit-starter",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "starterId",
+            "description": "id of starter to be edited",
+            "required": true,
+            "type": "string",
+            "schema": {
+              "$ref": "#/definitions/Starter"
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "starter to be edited",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Starter"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Could not edit starter"
+          },
+          "200": {
+            "description": "starter updated"
+          },
+          "500": {
+            "description": "server error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Starter": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Add exmple"
+        }
+      }
+    },
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Starter",
+    "url": "https://enigmatic-wildwood-43336.herokuapp.com"
+  }
+}
