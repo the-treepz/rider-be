@@ -1,5 +1,5 @@
-import { Document, Types } from 'mongoose';
-import { EmployeeInterface } from '../../employee/interface/employee.interface';
+import {Document, Types} from "mongoose";
+import {UserInterface} from "../../user/interface/user.interface";
 
 export interface TripDocument extends Document {
   _id: Types.ObjectId;
@@ -7,5 +7,5 @@ export interface TripDocument extends Document {
   dropOffLocation: string;
   checkOutTime: Date;
   checkInTime: Date;
-  employee: EmployeeInterface['_id'];
+  rider: UserInterface['_id'];
 }
