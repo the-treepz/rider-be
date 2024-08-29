@@ -1,20 +1,18 @@
-import {UserInterface} from "../user/interface/user.interface";
-import * as type from "./interface/trip.interface";
-import TripRepository from "./repository/trip.repository";
+import { UserInterface } from '../user/interface/user.interface';
+import * as type from './interface/trip.interface';
+import TripRepository from './repository/trip.repository';
+import { UnknownInterface } from '../../lib/unknown.interface';
 
 const TripService = {
-  async getTotalCheckInsOrCheckOuts(
-      business: UserInterface['_id'],
-      checkType: string,
-  ) {
-    // const findBuisness = await RiderService.findOne({ _id: business }, false);
-    // const employeeIds = findBuisness.employees.map(
-    //     (employee: RiderInterface['_id']) => employee._id,
-    // );
-    // if (checkType === 'in') {
-    //   return TripRepository.getCheckInCount(employeeIds);
-    // }
-    // return TripRepository.getCheckOutCount(employeeIds);
+  async getTrips(user: UserInterface['_id']) {
+    const trips = await TripRepository.findAll(user, 0, 0);
+    return trips.map((trip: UnknownInterface) => {
+      if (trip.checkInType === 'Daily') {
+        const { checkInDates, ...tripWithoutCheckInDates } = trip.toObject();
+        return tripWithoutCheckInDates;
+      }
+      return trip;
+    });
   },
   async findOne(body: type.FindTripInterface) {
     return TripRepository.findOne(body);

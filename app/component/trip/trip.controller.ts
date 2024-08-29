@@ -42,7 +42,6 @@ class TripController {
           return new Date(date.setUTCHours(0, 0, 0, 0));
         },
     );
-    // Check for existing weekly check-ins for the selected dates
     const existingWeeklyTrips = await TripService.find({
       rider: request.user.id,
       checkOutTime: null,
@@ -80,6 +79,12 @@ class TripController {
         response,
         'Weekly check-in successful',
     );
+  };
+  public getTrips = async (request: Request, response: Response) => {
+    const trips = await TripService.getTrips(request.user.id);
+    return ResponseHandler.OkResponse(response, 'Trips fetched successfully', {
+      trips,
+    });
   };
   public dailyCheckOut = async (request: Request, response: Response) => {
     ResponseHandler.CreatedResponse(response, 'check out succesful');

@@ -1,53 +1,29 @@
-import * as type from "../interface/trip.interface";
-import TripModel from "./trip.model";
-import {CreateTripInerfacee} from "../interface/trip.interface";
-import {UnknownInterface} from "../../../lib/unknown.interface";
+import * as type from '../interface/trip.interface';
+import TripModel from './trip.model';
+import { CreateTripInerfacee } from '../interface/trip.interface';
+import { UnknownInterface } from '../../../lib/unknown.interface';
+import { UserInterface } from '../../user/interface/user.interface';
 
 class TripRepository {
-  // public static async getCheckOutCount(
-  //   employeeIds: RiderInterface['_id'][],
-  // ) {
-  //   try {
-  //     return TripModel.countDocuments({
-  //       employee: { $in: employeeIds },
-  //       checkOutTime: { $ne: null },
-  //     });
-  //   } catch (e) {
-  //     return e;
-  //   }
-  // }
+  public static async countDocuments(query: type.FindTripInterface = {}) {
+    try {
+      return TripModel.countDocuments(query);
+    } catch (e) {
+      return e;
+    }
+  }
 
-  // public static async countDocuments(query: FindTripInterface = {}) {
-  //   try {
-  //     return TripModel.countDocuments(query);
-  //   } catch (e) {
-  //     return e;
-  //   }
-  // }
-
-  // public static async getCheckInCount(employeeIds: EmployeeInterface['_id'][]) {
-  //   try {
-  //     return TripModel.countDocuments({
-  //       employee: { $in: employeeIds },
-  //       checkInTime: { $ne: null },
-  //     });
-  //   } catch (e) {
-  //     return e;
-  //   }
-  // }
-
-  // public static async findAll(
-  //   query: type.FindTripInterface,
-  //   skip: number,
-  //   limit: number,
-  // ) {
-  //   try {
-  //     return TripModel.find(query).skip(skip).limit(limit).populate('employee');
-  //     // .populate('vehicle')
-  //   } catch (e) {
-  //     return e;
-  //   }
-  // }
+  public static async findAll(
+    rider: UserInterface['_id'],
+    skip: number,
+    limit: number,
+  ) {
+    try {
+      return TripModel.find({ rider }).skip(skip).limit(limit);
+    } catch (e) {
+      return e;
+    }
+  }
 
   public static async findOne(query: type.FindTripInterface) {
     try {
@@ -73,9 +49,9 @@ class TripRepository {
   public static async dailyCheckOut(data: any) {
     try {
       return TripModel.findOneAndUpdate(
-          data,
-          { checkOutTime: new Date() },
-          { new: true },
+        data,
+        { checkOutTime: new Date() },
+        { new: true },
       );
     } catch (e) {
       return e;
@@ -99,9 +75,9 @@ class TripRepository {
   public static async weeklyCheckOut(data: type.WeekdlyCheckoutInterface) {
     try {
       return TripModel.findOneAndUpdate(
-          data,
-          { checkOutTime: new Date() },
-          { new: true },
+        data,
+        { checkOutTime: new Date() },
+        { new: true },
       );
     } catch (e) {
       return e;

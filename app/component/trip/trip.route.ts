@@ -32,6 +32,12 @@ class TripRoute {
         asyncHandler(requireAuthorization),
         asyncHandler(this.tripController.weeklyCheckOut),
       );
+    app
+      .route(`${url.GET_TRIPS}`)
+      .get(
+        asyncHandler(requireAuthorization),
+        asyncHandler(this.tripController.getTrips),
+      );
   };
 }
 
