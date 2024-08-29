@@ -1,5 +1,5 @@
-import * as type from "../interface/trip.interface";
-import TripModel from "./trip.model";
+import * as type from '../interface/trip.interface';
+import TripModel from './trip.model';
 
 class TripRepository {
   // public static async getCheckOutCount(

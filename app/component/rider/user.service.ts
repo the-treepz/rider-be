@@ -1,7 +1,7 @@
 import * as type from './interface/user.interface';
 import RiderRepository from './repository/rider.repository';
 
-const RiderService = {
+const UserService = {
   async updateWithQuery(
     data: type.FindUserInterface,
     params: type.UpdateUserInterface,
@@ -19,4 +19,4 @@ const RiderService = {
     return RiderRepository.update(user, body);
   },
 };
-export default RiderService;
+export default UserService;

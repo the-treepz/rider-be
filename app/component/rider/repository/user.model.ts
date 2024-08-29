@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { RiderDocument } from './rider.document';
+import { UserDocument } from './user.document';
 import { UserModelInterface } from '../interface/user-model.interface';
 
 export const USER_STATUS_ENUM = {
@@ -16,6 +16,7 @@ const RiderSchema = new Schema(
     email: String,
     firstName: String,
     lastName: String,
+    alternativeEmail: String,
     status: {
       type: String,
       enum: [
@@ -34,9 +35,6 @@ const RiderSchema = new Schema(
   { timestamps: true },
 );
 
-const RiderModel = model<RiderDocument, UserModelInterface>(
-  'Rider',
-  RiderSchema,
-);
+const UserModel = model<UserDocument, UserModelInterface>('Rider', RiderSchema);
 
-export default RiderModel;
+export default UserModel;

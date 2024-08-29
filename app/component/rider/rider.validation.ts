@@ -9,7 +9,7 @@ const RiderValidation = {
       firstName: Joi.string(),
       lastName: Joi.string(),
       phoneNumber: Joi.string(),
-      email: Joi.string().email(),
+      alternativeEmail: Joi.string().email(),
     });
     return AppValidation.bodyBaseValidator(schema, request, response, next);
   },

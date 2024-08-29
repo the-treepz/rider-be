@@ -8,6 +8,7 @@ export interface UserInterface {
   phoneNumber: string;
   password: string;
   status: string;
+  alternativeEmail: string;
 }
 export interface FindUserInterface {
   email?: string;

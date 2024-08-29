@@ -1,13 +1,13 @@
-import {Request, Response} from "express";
-import AuthService from "./auth.service";
-import ResponseHandler from "../../lib/response-handler";
-import {StatusCodes} from "http-status-codes";
-import Hashing from "../../libraries/package/hashing";
-import SharedHelper from "../../lib/shared.helper";
-import RiderService from "../rider/rider.service";
-import AuthHelper from "./auth.helper";
-import OtpService from "../otp/otp.service";
-import {USER_STATUS_ENUM} from "../rider/repository/rider.model";
+import { Request, Response } from 'express';
+import AuthService from './auth.service';
+import ResponseHandler from '../../lib/response-handler';
+import { StatusCodes } from 'http-status-codes';
+import Hashing from '../../libraries/package/hashing';
+import SharedHelper from '../../lib/shared.helper';
+import UserService from '../rider/user.service';
+import AuthHelper from './auth.helper';
+import OtpService from '../otp/otp.service';
+import { USER_STATUS_ENUM } from '../rider/repository/user.model';
 
 class AuthController {
   public login = async (request: Request, response: Response) => {
@@ -15,12 +15,11 @@ class AuthController {
       email: request.body.email,
       password: request.body.password,
     });
-    console.log(result, 'the es');
     return ResponseHandler.SuccessResponse(
-        response,
-        StatusCodes.OK,
-        'Log in successful',
-        result,
+      response,
+      StatusCodes.OK,
+      'Log in successful',
+      result,
     );
   };
   public register = async (request: Request, response: Response) => {
@@ -32,39 +31,38 @@ class AuthController {
       phoneNumber: request.body.phoneNumber,
       password: hashedPassword,
     });
-    console.log(user, 'the yser created');
     return ResponseHandler.SuccessResponse(
-        response,
-        StatusCodes.CREATED,
-        'user created',
+      response,
+      StatusCodes.CREATED,
+      'user created',
     );
   };
   public forgotPassword = async (request: Request, response: Response) => {
-    const user = await RiderService.findOne({
+    const user = await UserService.findOne({
       email: SharedHelper.lowerCase(request.body.email),
     });
     ResponseHandler.SuccessResponse(
-        response,
-        StatusCodes.OK,
-        'Otp has been sent to your email',
+      response,
+      StatusCodes.OK,
+      'Otp has been sent to your email',
     );
     return AuthHelper.handleForgotPassword(user.email, user.firstName);
   };
   public resetPassword = async (request: Request, response: Response) => {
     const result = await OtpService.checkOtp(request.body.otp);
-    const findUser = await RiderService.findOne({ otpId: result.otpId });
+    const findUser = await UserService.findOne({ otpId: result.otpId });
     const { token } = await AuthHelper.createToken(findUser);
     ResponseHandler.SuccessResponse(
-        response,
-        StatusCodes.OK,
-        'password reset successfully',
-        { token },
+      response,
+      StatusCodes.OK,
+      'password reset successfully',
+      { token },
     );
     await AuthHelper.handleCompletePasswordReset(
-        findUser._id,
-        request.body.password,
+      findUser._id,
+      request.body.password,
     );
-    return  RiderService.update(findUser._id, {
+    return UserService.update(findUser._id, {
       status: USER_STATUS_ENUM.ACTIVE,
     });
   };

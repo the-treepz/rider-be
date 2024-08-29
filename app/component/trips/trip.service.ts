@@ -1,12 +1,12 @@
-import {UserInterface} from "../rider/interface/user.interface";
-import * as type from "./interface/trip.interface";
-import TripRepository from "./repository/trip.repository";
-import {UnknownInterface} from "../../lib/unknown.interface";
+import { UserInterface } from '../rider/interface/user.interface';
+import * as type from './interface/trip.interface';
+import TripRepository from './repository/trip.repository';
+import { UnknownInterface } from '../../lib/unknown.interface';
 
 const TripService = {
   async getTotalCheckInsOrCheckOuts(
-      business: UserInterface['_id'],
-      checkType: string,
+    business: UserInterface['_id'],
+    checkType: string,
   ) {
     // const findBuisness = await RiderService.findOne({ _id: business }, false);
     // const employeeIds = findBuisness.employees.map(

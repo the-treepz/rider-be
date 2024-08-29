@@ -1,6 +1,6 @@
 import { Document, Types } from 'mongoose';
 
-export interface RiderDocument extends Document {
+export interface UserDocument extends Document {
   _id: Types.ObjectId;
   address: string;
   city: string;

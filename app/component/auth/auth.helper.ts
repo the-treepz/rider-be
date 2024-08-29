@@ -5,7 +5,7 @@ import SharedHelper from '../../lib/shared.helper';
 import Hashing from '../../libraries/package/hashing';
 import { ServerError } from '../../exception/server.error';
 import { UnAuthorizedError } from '../../exception/un-authorized.error';
-import RiderService from '../rider/rider.service';
+import UserService from '../rider/user.service';
 import AuthEmail from './auth.email';
 import OtpService from '../otp/otp.service';
 
@@ -14,11 +14,11 @@ const AuthHelper = {
     user: UserInterface['_id'],
     password: string,
   ) {
-    const findUser = await RiderService.findOne({ _id: user });
+    const findUser = await UserService.findOne({ _id: user });
     const hashedPassword = await Hashing.hashValue(
       SharedHelper.trimString(password),
     );
-    await RiderService.update(findUser._id, {
+    await UserService.update(findUser._id, {
       password: hashedPassword,
     });
     return AuthEmail.sendPasswordResetted(findUser.email, findUser.firstName);
@@ -33,7 +33,7 @@ const AuthHelper = {
       otp: result.otp,
       firstName,
     });
-    return RiderService.updateWithQuery({ email }, { otpId: result.otpId });
+    return UserService.updateWithQuery({ email }, { otpId: result.otpId });
   },
   async createToken(business: UserInterface) {
     const token = Jwt.createToken(

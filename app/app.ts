@@ -11,7 +11,7 @@ import welcomeMessage from './middleware/welcome.middleware';
 import notFoundMiddleware from './middleware/not-found.middleware';
 import errorMiddleware from './middleware/error.middleware';
 import SharedHelper from './lib/shared.helper';
-import RiderRoute from './component/rider/rider.route';
+import UserRoute from './component/rider/user.route';
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ class App {
 
   public authRoute: AuthRoute = new AuthRoute();
 
-  public businessRoute: RiderRoute = new RiderRoute();
+  public businessRoute: UserRoute = new UserRoute();
 
   public tripRoute: TripRoute = new TripRoute();
 

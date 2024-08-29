@@ -1,4 +1,4 @@
-import RiderModel from './rider.model';
+import UserModel from './user.model';
 import * as type from '../interface/user.interface';
 
 class RiderRepository {
@@ -7,14 +7,14 @@ class RiderRepository {
     params: type.UpdateUserInterface,
   ) {
     try {
-      return RiderModel.findOneAndUpdate(data, params, { new: true });
+      return UserModel.findOneAndUpdate(data, params, { new: true });
     } catch (e) {
       return e;
     }
   }
   public static async countDocument() {
     try {
-      return RiderModel.countDocuments();
+      return UserModel.countDocuments();
     } catch (e) {
       return e;
     }
@@ -22,7 +22,7 @@ class RiderRepository {
 
   public static async create(data: type.CreateRiderInterface) {
     try {
-      return RiderModel.create(data);
+      return UserModel.create(data);
     } catch (e) {
       return e;
     }
@@ -30,7 +30,7 @@ class RiderRepository {
 
   public static async findOne(data: type.FindUserInterface, lean?: boolean) {
     try {
-      return RiderModel.findOne(data);
+      return UserModel.findOne(data);
     } catch (e) {
       return e;
     }
@@ -42,7 +42,7 @@ class RiderRepository {
     limit: number,
   ) {
     try {
-      return RiderModel.find(query).skip(skip).limit(limit);
+      return UserModel.find(query).skip(skip).limit(limit);
     } catch (e) {
       return e;
     }
@@ -53,7 +53,7 @@ class RiderRepository {
     query: type.UpdateUserInterface,
   ) {
     try {
-      return RiderModel.findByIdAndUpdate(user, query, { new: true });
+      return UserModel.findByIdAndUpdate(user, query, { new: true });
     } catch (e) {
       return e;
     }
