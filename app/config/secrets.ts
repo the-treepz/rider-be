@@ -60,3 +60,7 @@ export const TREEPZ_JWT_SECRET = throwIfUndefined(
 
 throwIfUndefined(process.env.TREEPZ_APP_STAGING_URL, 'TREEPZ_APP_STAGING_URL');
 throwIfUndefined(process.env.TREEPZ_APP_URL, 'TREEPZ_APP_URL');
+export const TREEPZ_PLUNK_API_KEY = throwIfUndefined(
+  process.env.TREEPZ_PLUNK_API_KEY,
+  'TREEPZ_PLUNK_API_KEY',
+);

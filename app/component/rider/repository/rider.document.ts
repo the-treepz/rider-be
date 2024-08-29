@@ -10,4 +10,5 @@ export interface RiderDocument extends Document {
   password: string;
   name: string;
   status: string;
+  otp: string;
 }

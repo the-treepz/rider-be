@@ -5,6 +5,9 @@ const env = require('./env')[String(ENVIRONMENT)];
 const { database, appUrl } = env;
 
 const EnvHelper = {
+  getFrontEndUrl() {
+    return 'https://someurl.com/';
+  },
   getDatabase() {
     return database;
   },

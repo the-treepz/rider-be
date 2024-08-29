@@ -1,34 +1,26 @@
 import { Types } from 'mongoose';
-import { RiderInterface } from '../../rider/interface/rider.interface';
+import { UserInterface } from '../../rider/interface/user.interface';
 import { UnknownInterface } from '../../../lib/unknown.interface';
-import { EmployeeInterface } from '../../employee/interface/employee.interface';
 
 export interface TripInterface {
   _id: Types.ObjectId;
-  batteryCapacity: string;
-  logo: string;
-  model: string;
-  fuel: string;
-  size: string;
-  transmission: string;
-  year: string;
-  status: string;
-  images: Array<string>;
-}
-export interface CreateCarInterface {
-  batteryCapacity: string;
-  size: string;
-  logo: string;
-  model: string;
-  fuel: string;
-  transmission: string;
-  year: string;
-  images: Array<string>;
+  checkInType: string;
+  dropOffLocation: string;
+  checkOutTime: Date;
+  checkInTime: Date;
+  rider: UserInterface['_id'];
 }
 export interface FindTripInterface {
   _id?: TripInterface['_id'] | string;
-  business?: RiderInterface['_id'] | UnknownInterface;
-  employee?: { $in: Array<EmployeeInterface['_id']> };
+  business?: UserInterface['_id'] | UnknownInterface;
+  rider?: { $in: Array<UserInterface['_id']> };
   from?: string;
   to?: string;
+  checkInType?: string;
+  checkOutTime?: Date | null;
+}
+export interface CreateTripInerfacee {
+  rider: UserInterface['_id'];
+  checkInTime: Date;
+  checkInType: string;
 }

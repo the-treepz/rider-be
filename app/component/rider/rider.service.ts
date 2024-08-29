@@ -1,39 +1,22 @@
-import * as type from './interface/rider.interface';
+import * as type from './interface/user.interface';
 import RiderRepository from './repository/rider.repository';
-import Pagination from '../../libraries/package/pagination';
 
 const RiderService = {
-  async findAll(
-    query: type.FindRiderInterface,
-    itemsPerPage: number,
-    pageNumber: number,
+  async updateWithQuery(
+    data: type.FindUserInterface,
+    params: type.UpdateUserInterface,
   ) {
-    const allBusinesses = await RiderRepository.countDocument();
-    const result = Pagination.getPaginationQueryDetails(
-      { pageNumber, itemsPerPage },
-      allBusinesses,
-    );
-    const businesses = await RiderRepository.getAll(
-      query,
-      result.skip,
-      result.limit,
-    );
-    return {
-      businesses,
-      currentPage: result.currentPage,
-      totalItemsCount: result.totalItemsCount,
-      totalPages: result.totalPages,
-    };
+    return RiderRepository.updateWithQuery(data, params);
   },
 
-  async findOne(data: type.FindRiderInterface, lean?: boolean) {
+  async findOne(data: type.FindUserInterface, lean?: boolean) {
     return RiderRepository.findOne(data, lean);
   },
   async update(
-    business: type.RiderInterface['_id'],
-    body: type.UpdateBusinessInterface,
+    user: type.UserInterface['_id'],
+    body: type.UpdateUserInterface,
   ) {
-    return RiderRepository.update(business, body);
+    return RiderRepository.update(user, body);
   },
 };
 export default RiderService;

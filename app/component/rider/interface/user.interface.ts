@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-export interface RiderInterface {
+export interface UserInterface {
   _id: Types.ObjectId;
   email: string;
   firstName: string;
@@ -9,10 +9,11 @@ export interface RiderInterface {
   password: string;
   status: string;
 }
-export interface FindRiderInterface {
+export interface FindUserInterface {
   email?: string;
   phoneNumber?: string;
-  _id?: RiderInterface['_id'];
+  _id?: UserInterface['_id'];
+  otpId?: string;
 }
 export interface CreateRiderInterface {
   email: string;
@@ -22,8 +23,10 @@ export interface CreateRiderInterface {
   password: string;
 }
 
-export interface UpdateBusinessInterface {
+export interface UpdateUserInterface {
   firstName?: string;
   lastName?: string;
   status?: string;
+  otpId?: string;
+  password?: string;
 }

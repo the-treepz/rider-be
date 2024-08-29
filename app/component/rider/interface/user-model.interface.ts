@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { RiderDocument } from '../repository/rider.document';
-import { RiderInterface } from './rider.interface';
+import { UserInterface } from './user.interface';
 
 export interface UserModelInterface extends Model<RiderDocument> {
-  build(attr: RiderInterface): RiderDocument;
+  build(attr: UserInterface): RiderDocument;
 }

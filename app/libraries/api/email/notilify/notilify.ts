@@ -16,5 +16,14 @@ const Notilify = {
         return NotilifyResponse.checkErrorResponse(err, 'generate otp');
       });
   },
+  async checkOtp(otp: string) {
+    return NotilifyService.checkOtp(otp)
+      .then(async (response) => {
+        return NotilifyResponse.checkResponse(response, 'check otp');
+      })
+      .catch((err) => {
+        return NotilifyResponse.checkErrorResponse(err, 'check otp');
+      });
+  },
 };
 export default Notilify;

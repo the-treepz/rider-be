@@ -35,5 +35,26 @@ const AuthValidation = {
     });
     return AppValidation.bodyBaseValidator(schema, request, response, next);
   },
+  async validateForgotPassword(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ) {
+    const schema = Joi.object({
+      email: Joi.string().email().label('Email').required(),
+    });
+    return AppValidation.bodyBaseValidator(schema, request, response, next);
+  },
+  async validateResetPassword(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ) {
+    const schema = Joi.object({
+      otp: Joi.string().required(),
+      password: Joi.string().required(),
+    });
+    return AppValidation.bodyBaseValidator(schema, request, response, next);
+  },
 };
 export default AuthValidation;

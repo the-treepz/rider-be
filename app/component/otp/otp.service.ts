@@ -2,8 +2,12 @@ import Notilify from '../../libraries/api/email/notilify/notilify';
 
 const OtpService = {
   async generateOtpDetail() {
-    const result = await Notilify.generateOtp();
-    return result.data;
+    const { data } = await Notilify.generateOtp();
+    return data;
+  },
+  async checkOtp(otp: string) {
+    const { data } = await Notilify.checkOtp(otp);
+    return data;
   },
 };
 export default OtpService;

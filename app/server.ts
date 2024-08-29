@@ -5,7 +5,7 @@ import { ENVIRONMENT } from './config/secrets';
 import Notification from './lib/notification';
 import Cron from './libraries/package/cron';
 
-const APP_PORT: number = parseInt(process.env.PORT as string, 10) || 9032;
+const APP_PORT: number = parseInt(process.env.PORT as string, 10) || 3622;
 const server = app.listen(APP_PORT, () => {
   logger.info(`Server started at ${APP_PORT}`);
   connectToDatabase()

@@ -13,4 +13,6 @@ export interface NotilifyGenerateOtpInterface {
   length?: string; // Default Value is 6
 }
 
-export type NotilifyPostRequestInterface = NotilifyGenerateOtpInterface;
+export type NotilifyPostRequestInterface =
+  | NotilifyGenerateOtpInterface
+  | { otp: string };

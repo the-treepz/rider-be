@@ -1,4 +1,4 @@
-import * as type from '../rider/interface/rider.interface';
+import * as type from '../rider/interface/user.interface';
 import RiderRepository from '../rider/repository/rider.repository';
 import RiderService from '../rider/rider.service';
 import AuthHelper from './auth.helper';

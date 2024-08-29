@@ -12,12 +12,10 @@ export const USER_STATUS_ENUM = {
 
 const RiderSchema = new Schema(
   {
+    otpId: String,
     email: String,
-    lastName: String,
-    phoneNumber: String,
     firstName: String,
-    business: { type: Schema.Types.ObjectId, ref: 'Business' },
-    password: String,
+    lastName: String,
     status: {
       type: String,
       enum: [
@@ -29,6 +27,9 @@ const RiderSchema = new Schema(
       ],
       default: USER_STATUS_ENUM.UNVERIFIED,
     },
+    phoneNumber: String,
+    business: { type: Schema.Types.ObjectId, ref: 'Business' },
+    password: String,
   },
   { timestamps: true },
 );

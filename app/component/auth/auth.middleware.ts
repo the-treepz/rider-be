@@ -1,5 +1,5 @@
 import { NextFunction } from 'express';
-import { RiderInterface } from '../rider/interface/rider.interface';
+import { UserInterface } from '../rider/interface/user.interface';
 import RiderRepository from '../rider/repository/rider.repository';
 import SharedHelper from '../../lib/shared.helper';
 import { USER_STATUS_ENUM } from '../rider/repository/rider.model';
@@ -9,7 +9,7 @@ import { NotFoundError } from '../../exception/not-found.error';
 const AuthMiddlewareService = {
   async getVerifiedUniversity(
     next: NextFunction,
-    email: RiderInterface['email'],
+    email: UserInterface['email'],
   ) {
     const user = await RiderRepository.findOne(
       {
