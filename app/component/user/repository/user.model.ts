@@ -31,6 +31,7 @@ const RiderSchema = new Schema(
     phoneNumber: String,
     business: { type: Schema.Types.ObjectId, ref: 'Business' },
     password: String,
+    trips: [{ type: Schema.Types.ObjectId, ref: 'Trip' }],
   },
   { timestamps: true },
 );

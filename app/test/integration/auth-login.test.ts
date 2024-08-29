@@ -6,7 +6,7 @@ import app from '../../app';
 import { LOGIN_USER_URL } from '../../component/auth/auth.url';
 import FakeData from '../../lib/fake-data';
 import { MESSAGE_INCORRECT_CREDENTIALS } from '../../component/auth/auth.message';
-import { MESSAGE_UNVERIEFIED_ACCOUNT } from '../../component/rider/user.message';
+import { MESSAGE_UNVERIEFIED_ACCOUNT } from '../../component/user/user.message';
 
 setupTestDatabase();
 describe('auth test', () => {

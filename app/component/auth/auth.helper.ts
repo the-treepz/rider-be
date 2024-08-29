@@ -1,11 +1,11 @@
-import { UserInterface } from '../rider/interface/user.interface';
+import { UserInterface } from '../user/interface/user.interface';
 import Jwt from '../../lib/jwt';
 import * as secret from '../../config/secrets';
 import SharedHelper from '../../lib/shared.helper';
 import Hashing from '../../libraries/package/hashing';
 import { ServerError } from '../../exception/server.error';
 import { UnAuthorizedError } from '../../exception/un-authorized.error';
-import UserService from '../rider/user.service';
+import UserService from '../user/user.service';
 import AuthEmail from './auth.email';
 import OtpService from '../otp/otp.service';
 

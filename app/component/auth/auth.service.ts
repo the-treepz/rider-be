@@ -1,14 +1,14 @@
-import * as type from '../rider/interface/user.interface';
-import RiderRepository from '../rider/repository/rider.repository';
-import UserService from '../rider/user.service';
+import * as type from '../user/interface/user.interface';
+import UserRepository from '../user/repository/user.repository';
+import UserService from '../user/user.service';
 import AuthHelper from './auth.helper';
 import { NotFoundError } from '../../exception/not-found.error';
-import { USER_STATUS_ENUM } from '../rider/repository/user.model';
+import { USER_STATUS_ENUM } from '../user/repository/user.model';
 import { ClientError } from '../../exception/client.error';
 
 const AuthService = {
   async create(data: type.CreateRiderInterface) {
-    return RiderRepository.create(data);
+    return UserRepository.create(data);
   },
   async login(data: { email: string; password: string }) {
     const { email, password } = data;

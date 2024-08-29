@@ -4,10 +4,10 @@ import ResponseHandler from '../../lib/response-handler';
 import { StatusCodes } from 'http-status-codes';
 import Hashing from '../../libraries/package/hashing';
 import SharedHelper from '../../lib/shared.helper';
-import UserService from '../rider/user.service';
+import UserService from '../user/user.service';
 import AuthHelper from './auth.helper';
 import OtpService from '../otp/otp.service';
-import { USER_STATUS_ENUM } from '../rider/repository/user.model';
+import { USER_STATUS_ENUM } from '../user/repository/user.model';
 
 class AuthController {
   public login = async (request: Request, response: Response) => {
@@ -24,7 +24,7 @@ class AuthController {
   };
   public register = async (request: Request, response: Response) => {
     const hashedPassword = await Hashing.hashValue(request.body.password);
-    const user = await AuthService.create({
+    await AuthService.create({
       email: SharedHelper.lowerCase(request.body.email),
       firstName: request.body.firstName,
       lastName: request.body.lastName,

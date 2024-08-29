@@ -6,7 +6,7 @@ import app from '../../app';
 import { SIGN_UP } from '../../component/auth/auth.url';
 import TestData from '../../lib/test.data';
 import FakeData from '../../lib/fake-data';
-import { MESSAGE_ACCOUNT_ALREADY_BELONGS_TO_USER } from '../../component/rider/user.message';
+import { MESSAGE_ACCOUNT_ALREADY_BELONGS_TO_USER } from '../../component/user/user.message';
 
 setupTestDatabase();
 describe('auth test', () => {

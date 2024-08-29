@@ -1,8 +1,8 @@
 import { NextFunction } from 'express';
-import { UserInterface } from '../rider/interface/user.interface';
-import RiderRepository from '../rider/repository/rider.repository';
+import { UserInterface } from '../user/interface/user.interface';
+import UserRepository from '../user/repository/user.repository';
 import SharedHelper from '../../lib/shared.helper';
-import { USER_STATUS_ENUM } from '../rider/repository/user.model';
+import { USER_STATUS_ENUM } from '../user/repository/user.model';
 import { ClientError } from '../../exception/client.error';
 import { NotFoundError } from '../../exception/not-found.error';
 
@@ -11,7 +11,7 @@ const AuthMiddlewareService = {
     next: NextFunction,
     email: UserInterface['email'],
   ) {
-    const user = await RiderRepository.findOne(
+    const user = await UserRepository.findOne(
       {
         email: SharedHelper.lowerCase(email),
       },

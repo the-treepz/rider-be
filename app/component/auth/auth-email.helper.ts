@@ -1,4 +1,4 @@
-import { UserInterface } from '../rider/interface/user.interface';
+import { UserInterface } from '../user/interface/user.interface';
 import EmailTemplatesHelper from '../../html/helper/email-template.helper';
 import EmailHelper from '../../lib/email/email-helper';
 import { EMAIL_SUBJECT } from '../../lib/email/email-log.constant';

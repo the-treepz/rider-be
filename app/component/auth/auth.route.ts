@@ -3,7 +3,7 @@ import { Application } from 'express';
 import * as url from './auth.url';
 import { asyncHandler } from '../../middleware/async-handler';
 import AuthValidation from './auth.validation';
-import RideMiddleware from '../rider/ride.middleware';
+import RideMiddleware from '../user/ride.middleware';
 class AuthRoute {
   public authController: AuthController = new AuthController();
 

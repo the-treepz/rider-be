@@ -9,7 +9,8 @@ const TripSchema = new Schema(
     checkInTime: Date,
     checkOutTime: { type: Date, default: null },
     dropOffLocation: String,
-    checkInType: { type: String, enum: ['Daily', 'Weekly'], required: true }, // New field
+    checkInType: { type: String, enum: ['Daily', 'Weekly'], required: true },
+    checkInDates: [{ type: Date }],
   },
   { timestamps: true },
 );

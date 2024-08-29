@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { TripInterface } from '../../trip/interface/trip.interface';
 
 export interface UserInterface {
   _id: Types.ObjectId;
@@ -30,4 +31,5 @@ export interface UpdateUserInterface {
   status?: string;
   otpId?: string;
   password?: string;
+  trips?: TripInterface['_id'] | Types.ObjectId[]; // Update to an array of ObjectId
 }

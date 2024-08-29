@@ -6,12 +6,12 @@ import cors from 'cors';
 import morgan from 'morgan';
 import morganBody from 'morgan-body';
 import AuthRoute from './component/auth/auth.route';
-import TripRoute from './component/trips/trip.route';
+import TripRoute from './component/trip/trip.route';
 import welcomeMessage from './middleware/welcome.middleware';
 import notFoundMiddleware from './middleware/not-found.middleware';
 import errorMiddleware from './middleware/error.middleware';
 import SharedHelper from './lib/shared.helper';
-import UserRoute from './component/rider/user.route';
+import UserRoute from './component/user/user.route';
 
 dotenv.config();
 

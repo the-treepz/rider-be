@@ -1,7 +1,7 @@
 import Email from '../../lib/email/email';
 import EnvHelper from '../../config/env.helper';
 import AuthEmailHelper from './auth-email.helper';
-import { UserInterface } from '../rider/interface/user.interface';
+import { UserInterface } from '../user/interface/user.interface';
 
 const AuthEmail = {
   async sendPasswordResetted(email: UserInterface['email'], firstName: string) {

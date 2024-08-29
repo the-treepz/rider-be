@@ -1,7 +1,9 @@
 import UserModel from './user.model';
 import * as type from '../interface/user.interface';
+import { UpdateUserInterface } from '../interface/user.interface';
+import { UnknownInterface } from '../../../lib/unknown.interface';
 
-class RiderRepository {
+class UserRepository {
   public static async updateWithQuery(
     data: type.FindUserInterface,
     params: type.UpdateUserInterface,
@@ -58,5 +60,20 @@ class RiderRepository {
       return e;
     }
   }
+
+  public static updateAndPush = async (
+    query: type.FindUserInterface,
+    params: type.UpdateUserInterface | UnknownInterface,
+  ) => {
+    try {
+      return UserModel.findOneAndUpdate(
+        query,
+        { $push: params },
+        { new: true },
+      );
+    } catch (e) {
+      return e;
+    }
+  };
 }
-export default RiderRepository;
+export default UserRepository;
