@@ -1,5 +1,6 @@
 import * as type from './interface/rider.interface';
 import RiderRepository from './repository/rider.repository';
+import { TripInterface } from '../trip/interface/trip.interface';
 
 const RiderService = {
   async updateWithQuery(
@@ -23,6 +24,12 @@ const RiderService = {
     body: type.UpdateUserInterface,
   ) {
     return RiderRepository.update(user, body);
+  },
+  async updateToPull(
+    user: type.RiderInterface['_id'],
+    body: { trips: TripInterface['_id'] },
+  ) {
+    return RiderRepository.updateToPull(user, body);
   },
 };
 export default RiderService;

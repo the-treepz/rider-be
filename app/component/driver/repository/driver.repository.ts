@@ -1,16 +1,8 @@
-import DriverModel from './driver.model';
 import * as type from '../interface/driver.interface';
-import { DriverInterface } from '../interface/driver.interface';
+import DriverModel from './driver.model';
+import { UpdatDriverInterface } from '../interface/driver.interface';
 
 class DriverRepository {
-  public static async countDocument() {
-    try {
-      return DriverModel.countDocuments();
-    } catch (e) {
-      return e;
-    }
-  }
-
   public static async create(data: type.CreateBusinessInterface) {
     try {
       return DriverModel.create(data);
@@ -18,36 +10,20 @@ class DriverRepository {
       return e;
     }
   }
-
-  public static async findOne(
-    data: type.FindBusinessInterface,
-    lean?: boolean,
-  ) {
+  public static async findOne(data: type.FindDriverInterface) {
     try {
-      if (lean) return DriverModel.findOne(data);
-      return DriverModel.findOne(data).populate('employees');
-    } catch (e) {
-      return e;
-    }
-  }
-  public static async getAll(
-    query: type.FindBusinessInterface,
-    skip: number,
-    limit: number,
-  ) {
-    try {
-      return DriverModel.find(query).skip(skip).limit(limit);
+      return DriverModel.find(data);
     } catch (e) {
       return e;
     }
   }
 
   public static async update(
-    business: type.DriverInterface['_id'],
-    query: type.UpdateBusinessInterface,
+    driver: type.DriverInterface['_id'],
+    query: type.UpdatDriverInterface,
   ) {
     try {
-      return DriverModel.findByIdAndUpdate(business, query, { new: true });
+      return DriverModel.findByIdAndUpdate(driver, query, { new: true });
     } catch (e) {
       return e;
     }

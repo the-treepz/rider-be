@@ -5,6 +5,7 @@ import requireAuthorization from '../../middleware/require-authorization';
 import * as url from './trip.url';
 import TripValidation from './trip.validation';
 import {
+  CANCEL,
   CONFIRM_TRIP,
   DRIVERS_AND_FARE,
   FARE_ESTIMATE,
@@ -89,6 +90,12 @@ class TripRoute {
         asyncHandler(requireAuthorization),
         asyncHandler(TripValidation.bookTrip),
         asyncHandler(this.tripController.getDriverAndFare),
+      );
+    app
+      .route(`${url.CANCEL}/:tripId`)
+      .put(
+        asyncHandler(requireAuthorization),
+        asyncHandler(this.tripController.cancelTtrip),
       );
   };
 }

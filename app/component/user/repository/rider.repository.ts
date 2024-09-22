@@ -1,9 +1,28 @@
 import RiderModel from './rider.model';
 import * as type from '../interface/rider.interface';
-import { UpdateUserInterface } from '../interface/rider.interface';
+import {
+  RiderInterface,
+  UpdateUserInterface,
+} from '../interface/rider.interface';
 import { UnknownInterface } from '../../../lib/unknown.interface';
+import { TripInterface } from '../../trip/interface/trip.interface';
 
 class RiderRepository {
+  public static async updateToPull(
+    rider: RiderInterface['_id'],
+    params: { trips: TripInterface['_id'] },
+  ) {
+    try {
+      // 4. Remove the trip from the rider's trips array
+      return RiderModel.findByIdAndUpdate(
+        rider,
+        { $pull: params },
+        { new: true }, // Option to return the updated document
+      );
+    } catch (e) {
+      return e;
+    }
+  }
   public static async updateWithQuery(
     data: type.FindUserInterface,
     params: type.UpdateUserInterface,

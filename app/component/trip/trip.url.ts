@@ -10,3 +10,4 @@ export const WEEKLY_CHECK_IN = `${TRIP}/check-IN/weekly`;
 export const FARE_ESTIMATE = `${TRIP}/estimate-fare`;
 export const DRIVERS_AND_FARE = `${TRIP}/drivers-and-fare`;
 export const CONFIRM_TRIP = `${TRIP}/confirm`;
+export const CANCEL = `${TRIP}/cancel`;

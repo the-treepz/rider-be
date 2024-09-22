@@ -10,8 +10,8 @@ export interface DriverInterface {
   name: string;
   status: string;
 }
-export interface FindBusinessInterface {
-  email?: string;
+export interface FindDriverInterface {
+  status?: string;
   _id?: DriverInterface['_id'];
 }
 export interface CreateBusinessInterface {
@@ -20,8 +20,6 @@ export interface CreateBusinessInterface {
   password: string;
 }
 
-export interface UpdateBusinessInterface {
-  firstName?: string;
-  lastName?: string;
-  status?: string;
+export interface UpdatDriverInterface {
+  status: string;
 }

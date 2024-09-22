@@ -2,6 +2,7 @@ import { RiderInterface } from '../user/interface/rider.interface';
 import * as type from './interface/trip.interface';
 import TripRepository from './repository/trip.repository';
 import { UnknownInterface } from '../../lib/unknown.interface';
+import { NotFoundError } from '../../exception/not-found.error';
 
 const TripService = {
   async getTrips(user: RiderInterface['_id']) {
@@ -17,8 +18,14 @@ const TripService = {
   async findOne(body: type.FindTripInterface) {
     return TripRepository.findOne(body);
   },
-  async find(body: type.FindTripInterface) {
-    return TripRepository.find(body);
+  async find(body: type.FindTripInterface, handle?: boolean) {
+    const trip = await TripRepository.findOne(body);
+
+    if (handle) {
+      if (trip) return trip;
+      throw new NotFoundError('trip does not exist');
+    }
+    return TripRepository.findOne(body);
   },
   async create(body: type.CreateTripInerfacee) {
     return TripRepository.create(body);

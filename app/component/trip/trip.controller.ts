@@ -12,6 +12,7 @@ import DriverModel, {
 import SharedHelper from '../../lib/shared.helper';
 import WalletModel from '../wallet/wallet.model';
 import TripHelper from './trip.helper';
+import DriverService from '../driver/driver.service';
 
 class TripController {
   public dailyCheckIn = async (request: Request, response: Response) => {
@@ -211,7 +212,6 @@ class TripController {
     );
     return ResponseHandler.CreatedResponse(response, 'trip booked');
   };
-
   public confirmTrip = async (request: Request, response: Response) => {
     // 3. Calculate the fare
     const { pickUpLocation, dropOffLocation, driver } = request.body;
@@ -278,6 +278,29 @@ class TripController {
       { $push: { trips: createtrip._id } },
       { new: true }, // Option to return the updated document
     );
+  };
+  public cancelTtrip = async (request: Request, response: Response) => {
+    if (!request.params.tripId)
+      throw new ClientError('trip id is required to cancel trips');
+
+    const findTripe = await TripService.find(
+      { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
+      true,
+    );
+    console.log(findTripe, 'seen tri');
+    // 2. Check if the user is the rider of the trip
+    if (findTripe.rider.toString() !== request.user.id)
+      throw new ClientError('You are not authorized to cancel this trip.');
+    ResponseHandler.OkResponse(response, 'trip canceled');
+    const driver = await DriverService.findOne({ _id: findTripe.driver });
+    await DriverService.update(driver._id, {
+      status: DRIVER_STATUS_ENUM.AVALIABLE,
+    });
+    await RiderService.updateToPull(request.user.id, { trips: findTripe._id });
+    const trip = await TripModel.findByIdAndUpdate(findTripe._id, {
+      status: driver_STATUS_ENUM.CANCELED,
+    });
+    console.log(trip, 'the can');
   };
 }
 

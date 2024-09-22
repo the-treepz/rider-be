@@ -37,7 +37,7 @@ class TripRepository {
   }
   public static async find(query: type.FindTripInterface) {
     try {
-      return TripModel.find(query);
+      return TripModel.find(query).populate('rider');
     } catch (e) {
       return e;
     }
