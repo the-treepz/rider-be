@@ -4,10 +4,11 @@ import ResponseHandler from '../../lib/response-handler';
 import { StatusCodes } from 'http-status-codes';
 import Hashing from '../../libraries/package/hashing';
 import SharedHelper from '../../lib/shared.helper';
-import UserService from '../user/user.service';
+import RiderService from '../user/rider.service';
+import WalletService from '../wallet/wallet.service';
 import AuthHelper from './auth.helper';
 import OtpService from '../otp/otp.service';
-import { USER_STATUS_ENUM } from '../user/repository/user.model';
+import { USER_STATUS_ENUM } from '../user/repository/rider.model';
 
 class AuthController {
   public login = async (request: Request, response: Response) => {
@@ -31,14 +32,19 @@ class AuthController {
       phoneNumber: request.body.phoneNumber,
       password: hashedPassword,
     });
-    return ResponseHandler.SuccessResponse(
+    ResponseHandler.SuccessResponse(
       response,
       StatusCodes.CREATED,
       'user created',
     );
+    const findUsr = await RiderService.findOne({
+      email: SharedHelper.lowerCase(request.body.email),
+    });
+    const wallet = await WalletService.create(findUsr._id);
+    return RiderService.update(findUsr._id, { wallet: wallet._id });
   };
   public forgotPassword = async (request: Request, response: Response) => {
-    const user = await UserService.findOne({
+    const user = await RiderService.findOne({
       email: SharedHelper.lowerCase(request.body.email),
     });
     ResponseHandler.SuccessResponse(
@@ -50,7 +56,7 @@ class AuthController {
   };
   public resetPassword = async (request: Request, response: Response) => {
     const result = await OtpService.checkOtp(request.body.otp);
-    const findUser = await UserService.findOne({ otpId: result.otpId });
+    const findUser = await RiderService.findOne({ otpId: result.otpId });
     const { token } = await AuthHelper.createToken(findUser);
     ResponseHandler.SuccessResponse(
       response,
@@ -62,7 +68,7 @@ class AuthController {
       findUser._id,
       request.body.password,
     );
-    return UserService.update(findUser._id, {
+    return RiderService.update(findUser._id, {
       status: USER_STATUS_ENUM.ACTIVE,
     });
   };

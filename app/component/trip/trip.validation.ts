@@ -3,16 +3,38 @@ import Joi from 'joi';
 import AppValidation from '../../middleware/app.validation';
 
 const TripValidation = {
-  async create(request: Request, response: Response, next: NextFunction) {
+  async bookTrip(request: Request, response: Response, next: NextFunction) {
     const schema = Joi.object({
-      batteryCapacity: Joi.string().required(),
-      fuel: Joi.string().required(),
-      images: Joi.array().items(Joi.string()).required(),
-      logo: Joi.string().required(),
-      model: Joi.string().required(),
-      size: Joi.string().required(),
-      transmission: Joi.string().required(),
-      year: Joi.string().required(),
+      pickUpLocation: Joi.object({
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+      }).required(),
+      dropOffLocation: Joi.object({
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+      }).required(),
+    });
+
+    return AppValidation.bodyBaseValidator(schema, request, response, next);
+  },
+  async confirmTrip(request: Request, response: Response, next: NextFunction) {
+    const schema = Joi.object({
+      pickUpLocation: Joi.object({
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+      }).required(),
+      dropOffLocation: Joi.object({
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+      }).required(),
+      driver: Joi.string().required(),
+    });
+    return AppValidation.bodyBaseValidator(schema, request, response, next);
+  },
+  async selectDriver(request: Request, response: Response, next: NextFunction) {
+    const schema = Joi.object({
+      driver: Joi.string().required(),
+      trip: Joi.string().required(),
     });
     return AppValidation.bodyBaseValidator(schema, request, response, next);
   },

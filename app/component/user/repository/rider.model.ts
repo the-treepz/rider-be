@@ -1,7 +1,6 @@
 import { model, Schema } from 'mongoose';
-import { UserDocument } from './user.document';
-import { UserModelInterface } from '../interface/user-model.interface';
-
+import { RiderDocument } from './rider.document';
+import { RiderModelInterface } from '../interface/rider-model.interface';
 export const USER_STATUS_ENUM = {
   ACTIVE: 'Active',
   INVITED: 'Invited',
@@ -31,11 +30,16 @@ const RiderSchema = new Schema(
     phoneNumber: String,
     business: { type: Schema.Types.ObjectId, ref: 'Business' },
     password: String,
+    defaultPassword: String,
     trips: [{ type: Schema.Types.ObjectId, ref: 'Trip' }],
+    wallet: { type: Schema.Types.ObjectId, ref: 'Wallet' },
   },
   { timestamps: true },
 );
 
-const UserModel = model<UserDocument, UserModelInterface>('Rider', RiderSchema);
+const RiderModel = model<RiderDocument, RiderModelInterface>(
+  'Rider',
+  RiderSchema,
+);
 
-export default UserModel;
+export default RiderModel;

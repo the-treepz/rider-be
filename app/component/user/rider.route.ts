@@ -1,12 +1,12 @@
 import { Application } from 'express';
-import UserController from './user.controller';
-import { EDIT_USER, GET_USER } from './user.url';
+import RiderController from './rider.controller';
+import { EDIT_USER, GET_USER } from './ridr.url';
 import { asyncHandler } from '../../middleware/async-handler';
 import requireAuthorization from '../../middleware/require-authorization';
 import RiderValidation from './rider.validation';
 
-class UserRoute {
-  public userController: UserController = new UserController();
+class RiderRoute {
+  public userController: RiderController = new RiderController();
 
   public routes = (app: Application): void => {
     app
@@ -25,4 +25,4 @@ class UserRoute {
   };
 }
 
-export default UserRoute;
+export default RiderRoute;

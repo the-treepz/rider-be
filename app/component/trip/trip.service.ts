@@ -1,10 +1,10 @@
-import { UserInterface } from '../user/interface/user.interface';
+import { RiderInterface } from '../user/interface/rider.interface';
 import * as type from './interface/trip.interface';
 import TripRepository from './repository/trip.repository';
 import { UnknownInterface } from '../../lib/unknown.interface';
 
 const TripService = {
-  async getTrips(user: UserInterface['_id']) {
+  async getTrips(user: RiderInterface['_id']) {
     const trips = await TripRepository.findAll(user, 0, 0);
     return trips.map((trip: UnknownInterface) => {
       if (trip.checkInType === 'Daily') {
@@ -23,21 +23,21 @@ const TripService = {
   async create(body: type.CreateTripInerfacee) {
     return TripRepository.create(body);
   },
-  async dailyCheckOut(user: UserInterface['_id']) {
+  async dailyCheckOut(user: RiderInterface['_id']) {
     return TripRepository.dailyCheckOut({
       rider: user,
       checkOutTime: null,
       checkInType: 'Daily',
     });
   },
-  async weeklyCheckOut(user: UserInterface['_id']) {
+  async weeklyCheckOut(user: RiderInterface['_id']) {
     return TripRepository.weeklyCheckOut({
       rider: user,
       checkOutTime: null,
       checkInType: 'Weekly',
     });
   },
-  async findweeklyCheckn(user: UserInterface['_id']) {
+  async findWeeklyCheckn(user: RiderInterface['_id']) {
     return TripRepository.findweeklyCheckn({
       rider: user,
       checkOutTime: null,

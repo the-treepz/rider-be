@@ -11,7 +11,8 @@ import welcomeMessage from './middleware/welcome.middleware';
 import notFoundMiddleware from './middleware/not-found.middleware';
 import errorMiddleware from './middleware/error.middleware';
 import SharedHelper from './lib/shared.helper';
-import UserRoute from './component/user/user.route';
+import RiderRoute from './component/user/rider.route';
+import DriverRoute from './component/driver/driver.route';
 
 dotenv.config();
 
@@ -20,8 +21,8 @@ class App {
 
   public authRoute: AuthRoute = new AuthRoute();
 
-  public businessRoute: UserRoute = new UserRoute();
-
+  public businessRoute: RiderRoute = new RiderRoute();
+  public driverRoute: DriverRoute = new DriverRoute();
   public tripRoute: TripRoute = new TripRoute();
 
   constructor() {
@@ -29,6 +30,7 @@ class App {
     this.config();
     this.authRoute.routes(this.app);
     this.businessRoute.routes(this.app);
+    this.driverRoute.routes(this.app);
     this.tripRoute.routes(this.app);
     this.app.disable('x-powered-by');
     this.app.set('trust proxy', true);

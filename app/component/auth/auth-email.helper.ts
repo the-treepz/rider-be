@@ -1,4 +1,4 @@
-import { UserInterface } from '../user/interface/user.interface';
+import { RiderInterface } from '../user/interface/rider.interface';
 import EmailTemplatesHelper from '../../html/helper/email-template.helper';
 import EmailHelper from '../../lib/email/email-helper';
 import { EMAIL_SUBJECT } from '../../lib/email/email-log.constant';
@@ -6,8 +6,8 @@ import { OtpInterface } from '../otp/interface/otp.interface';
 
 const AuthEmailHelper = {
   createPasswordResetSuccessful(data: {
-    email: UserInterface['email'];
-    firstName: UserInterface['firstName'];
+    email: RiderInterface['email'];
+    firstName: RiderInterface['firstName'];
   }) {
     const { email, firstName } = data;
     return {
@@ -24,8 +24,8 @@ const AuthEmailHelper = {
     };
   },
   createForgotPasswordOtp(data: {
-    email: UserInterface['email'];
-    firstName: UserInterface['firstName'];
+    email: RiderInterface['email'];
+    firstName: RiderInterface['firstName'];
     forgotPasswordUrl: string;
     otp: OtpInterface['otp'];
   }) {
@@ -45,8 +45,8 @@ const AuthEmailHelper = {
     };
   },
   sendVerificationEmailToUser(data: {
-    email: UserInterface['email'];
-    firstName: UserInterface['firstName'];
+    email: RiderInterface['email'];
+    firstName: RiderInterface['firstName'];
     otp: OtpInterface['otp'];
   }) {
     const { email, firstName, otp } = data;

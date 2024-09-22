@@ -1,31 +1,31 @@
-import { UserInterface } from '../user/interface/user.interface';
+import { RiderInterface } from '../user/interface/rider.interface';
 import Jwt from '../../lib/jwt';
 import * as secret from '../../config/secrets';
 import SharedHelper from '../../lib/shared.helper';
 import Hashing from '../../libraries/package/hashing';
 import { ServerError } from '../../exception/server.error';
 import { UnAuthorizedError } from '../../exception/un-authorized.error';
-import UserService from '../user/user.service';
+import RiderService from '../user/rider.service';
 import AuthEmail from './auth.email';
 import OtpService from '../otp/otp.service';
 
 const AuthHelper = {
   async handleCompletePasswordReset(
-    user: UserInterface['_id'],
+    user: RiderInterface['_id'],
     password: string,
   ) {
-    const findUser = await UserService.findOne({ _id: user });
+    const findUser = await RiderService.findOne({ _id: user });
     const hashedPassword = await Hashing.hashValue(
       SharedHelper.trimString(password),
     );
-    await UserService.update(findUser._id, {
+    await RiderService.update(findUser._id, {
       password: hashedPassword,
     });
     return AuthEmail.sendPasswordResetted(findUser.email, findUser.firstName);
   },
   async handleForgotPassword(
-    email: UserInterface['email'],
-    firstName: UserInterface['firstName'],
+    email: RiderInterface['email'],
+    firstName: RiderInterface['firstName'],
   ) {
     const result = await OtpService.generateOtpDetail();
     await AuthEmail.sendForgotPasswordOtp({
@@ -33,9 +33,9 @@ const AuthHelper = {
       otp: result.otp,
       firstName,
     });
-    return UserService.updateWithQuery({ email }, { otpId: result.otpId });
+    return RiderService.updateWithQuery({ email }, { otpId: result.otpId });
   },
-  async createToken(business: UserInterface) {
+  async createToken(business: RiderInterface) {
     const token = Jwt.createToken(
       { email: business.email, id: business._id },
       secret.TREEPZ_JWT_SECRET,
@@ -43,19 +43,46 @@ const AuthHelper = {
     );
     return { token };
   },
-
-  async handleLogin(user: UserInterface, passwordProvided: string) {
+  async handleLogin(user: RiderInterface, passwordProvided: string) {
     const trimmedProvidedPassword = SharedHelper.trimString(passwordProvided);
-    const correctPassword = await Hashing.compareHashedValue(
+    // Check if the user has a set password
+    if (!user.password) {
+      // If no password is set, allow login with the default password only
+      const isDefaultPassword = await Hashing.compareHashedValue(
+        trimmedProvidedPassword,
+        user.defaultPassword,
+      );
+      if (isDefaultPassword) {
+        const { token } = await this.createToken(user);
+        if (!token) throw new ServerError('Unable to create token');
+        return { token };
+      }
+      throw new UnAuthorizedError('Incorrect Credentials');
+    }
+    // If a password is set, check against both the default password and the actual password
+    if (user.defaultPassword) {
+      const isDefaultPassword = await Hashing.compareHashedValue(
+        trimmedProvidedPassword,
+        user.defaultPassword,
+      );
+      if (isDefaultPassword) {
+        // Optionally, you could prompt the user to change their password if they use the default
+        const { token } = await this.createToken(user);
+        if (!token) throw new ServerError('Unable to create token');
+        return { token };
+      }
+    }
+    // Check the hashed password if it exists
+    const isCorrectPassword = await Hashing.compareHashedValue(
       trimmedProvidedPassword,
       user.password,
     );
-    if (correctPassword) {
+
+    console.log(isCorrectPassword);
+    if (isCorrectPassword) {
       const { token } = await this.createToken(user);
       if (!token) throw new ServerError('Unable to create token');
-      return {
-        token,
-      };
+      return { token };
     }
     throw new UnAuthorizedError('Incorrect Credentials');
   },

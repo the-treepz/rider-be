@@ -2,7 +2,7 @@ import * as type from '../interface/trip.interface';
 import TripModel from './trip.model';
 import { CreateTripInerfacee } from '../interface/trip.interface';
 import { UnknownInterface } from '../../../lib/unknown.interface';
-import { UserInterface } from '../../user/interface/user.interface';
+import { RiderInterface } from '../../user/interface/rider.interface';
 
 class TripRepository {
   public static async countDocuments(query: type.FindTripInterface = {}) {
@@ -14,12 +14,15 @@ class TripRepository {
   }
 
   public static async findAll(
-    rider: UserInterface['_id'],
+    rider: RiderInterface['_id'],
     skip: number,
     limit: number,
   ) {
     try {
-      return TripModel.find({ rider }).skip(skip).limit(limit);
+      return TripModel.find({ rider })
+        .skip(skip)
+        .limit(limit)
+        .populate('rider', 'firstName lastName');
     } catch (e) {
       return e;
     }

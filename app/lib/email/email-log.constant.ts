@@ -1,7 +1,7 @@
 export const EMAIL_FROM = {
   name: 'Treepz',
   BREVO_EMAIL_FROM: 'treepz@treepz.com',
-  PLUNK_EMAIL_FROM:'Plunk'
+  PLUNK_EMAIL_FROM: 'Plunk',
 };
 
 export const EMAIL_LOG_SOURCE_ENUM = {

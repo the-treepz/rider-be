@@ -64,3 +64,8 @@ export const TREEPZ_PLUNK_API_KEY = throwIfUndefined(
   process.env.TREEPZ_PLUNK_API_KEY,
   'TREEPZ_PLUNK_API_KEY',
 );
+
+export const TREEPZ_SENDGRID_API_KEY = throwIfUndefined(
+  process.env.TREEPZ_SENDGRID_API_KEY,
+  'TREEPZ_SENDGRID_API_KEY',
+);

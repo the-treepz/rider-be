@@ -1,7 +1,8 @@
 import { Types } from 'mongoose';
 import { TripInterface } from '../../trip/interface/trip.interface';
+import { WalletInterface } from '../../wallet/interface/wallet.interface';
 
-export interface UserInterface {
+export interface RiderInterface {
   _id: Types.ObjectId;
   email: string;
   firstName: string;
@@ -10,11 +11,13 @@ export interface UserInterface {
   password: string;
   status: string;
   alternativeEmail: string;
+  defaultPassword: string;
+  wallet: WalletInterface['_id'];
 }
 export interface FindUserInterface {
   email?: string;
   phoneNumber?: string;
-  _id?: UserInterface['_id'];
+  _id?: RiderInterface['_id'];
   otpId?: string;
 }
 export interface CreateRiderInterface {
@@ -32,4 +35,5 @@ export interface UpdateUserInterface {
   otpId?: string;
   password?: string;
   trips?: TripInterface['_id'] | Types.ObjectId[]; // Update to an array of ObjectId
+  wallet?: WalletInterface['_id'];
 }

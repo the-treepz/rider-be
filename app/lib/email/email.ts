@@ -3,6 +3,7 @@ import Nodemailer from '../../libraries/package/nodemailer/nodemailer';
 import SharedHelper from '../shared.helper';
 import Brevo from '../../libraries/api/email/brevo/brevo';
 import { EMAIL_FROM } from './email-log.constant';
+import Sendgrid from '../../libraries/package/sendgrid/sendgrid';
 
 const Email = {
   sendNonProductionEmail(options: MailInterface) {
@@ -15,9 +16,12 @@ const Email = {
       });
   },
   async sendEmail(options: MailInterface) {
-    if (SharedHelper.checkIfProductionOrStagingEnvironment()) {
-      return Brevo.sendEmail(options);
-    }
+    /**
+     * todo
+     */
+    // if (SharedHelper.checkIfProductionOrStagingEnvironment()) {
+    //   return Sendgrid.sendEmail(options);
+    // }
     return this.sendNonProductionEmail(options);
   },
   async sendMeEmail(message: string, subject: string) {
