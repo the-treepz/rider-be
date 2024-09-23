@@ -13,11 +13,10 @@ const VerificationEmailHelper = {
       subject: 'NEW OTP CODE REQUEST',
       html: EmailTemplatesHelper.generateTemplate(
         {
-          email,
           firstName,
           otp,
         },
-        'user-requesting-another-verification-code.html',
+        'request-verification.html',
       ),
       from: EmailHelper.getFromEmail(),
     };

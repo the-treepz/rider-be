@@ -50,14 +50,12 @@ class TripController {
         return new Date(date.setUTCHours(0, 0, 0, 0));
       },
     );
-    console.log(checkInDateObjects, 'checkInDateObjects');
     const existingWeeklyTrips = await TripService.find({
       rider: request.user.id,
       checkOutTime: null,
       checkInType: 'Weekly',
       checkInTime: { $in: checkInDateObjects },
     });
-    console.log(existingWeeklyTrips, 'existingWeeklyTrips');
     if (existingWeeklyTrips && existingWeeklyTrips.length > 0)
       throw new ClientError(
         'Employee already has weekly check-ins for some selected dates.',
@@ -218,9 +216,7 @@ class TripController {
       await RiderService.update(findUser._id, { wallet: wallet._id });
     }
     const findUserAgaian = await RiderService.findOne({ _id: request.user.id });
-    console.log(findUserAgaian, 'the findUserAgaian');
     const totalFare = parseFloat(fareDetails.estimatedFare); // Base fare
-    // Adjust based on additional distance calculations
     const finalFare = totalFare + totalFare;
     if (findUserAgaian.wallet.amount < finalFare)
       throw new ClientError('Insufficient funds in wallet.');
@@ -254,18 +250,14 @@ class TripController {
       bookingFor,
       tripType,
     };
-
     // Set common properties
     tripData.estimatedPickUpTime = estimatedPickUpTime; // Set for both types
-
     if (tripType === 'round') {
       tripData.estimatedDropOffTime = estimatedDropOffTime; // Set for round trips
     }
-
     if (bookingFor === 'others') {
       tripData.details = details; // Include details only for "others" booking
     }
-
     const createTrip = await TripService.create(tripData);
     console.log(createTrip, 'the trip created');
     await DriverModel.findByIdAndUpdate(driver, {
@@ -287,11 +279,15 @@ class TripController {
       { $push: { trips: createTrip._id } },
       { new: true }, // Option to return the updated document
     );
-    return DriverModel.findByIdAndUpdate(
+    await DriverModel.findByIdAndUpdate(
       findDriver._id,
       { $push: { trips: createTrip._id } },
       { new: true }, // Option to return the updated document
     );
+    /**
+     * todo
+     * send email to admin
+     */
   };
   public cancelTtrip = async (request: Request, response: Response) => {
     if (!request.params.tripId)

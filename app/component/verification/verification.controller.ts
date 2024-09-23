@@ -8,6 +8,7 @@ import VerificationEmail from './verification.email';
 import { USER_STATUS_ENUM } from '../user/repository/rider.model';
 import AuthHelper from '../auth/auth.helper';
 import { ServerError } from '../../exception/server.error';
+import SharedHelper from "../../lib/shared.helper";
 
 class VerificationController {
   public requestToVerifyEmail = async (
@@ -15,11 +16,11 @@ class VerificationController {
     response: Response,
   ) => {
     const user = await RiderService.findOne(
-      { email: request.body.email },
+      { email: SharedHelper.lowerCase(request.body.email )},
       true,
     );
     console.log(user, 'useruser');
-    if (user.isVerified)
+    if (user.status === USER_STATUS_ENUM.ACTIVE)
       throw new ClientError('your account is already verified');
     ResponseHandler.SuccessResponse(
       response,
