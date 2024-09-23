@@ -11,7 +11,7 @@ export const USER_STATUS_ENUM = {
 
 const RiderSchema = new Schema(
   {
-      otp: String,
+    otp: String,
     email: String,
     firstName: String,
     lastName: String,

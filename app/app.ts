@@ -13,7 +13,7 @@ import errorMiddleware from './middleware/error.middleware';
 import SharedHelper from './lib/shared.helper';
 import RiderRoute from './component/user/rider.route';
 import DriverRoute from './component/driver/driver.route';
-import VerificationRoute from "./component/verification/verification.route";
+import VerificationRoute from './component/verification/verification.route';
 
 dotenv.config();
 

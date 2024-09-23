@@ -64,7 +64,6 @@ export const getLocationFromCoordinates = async (
       return 'N/A';
     }
   } catch (error) {
-
     return null;
   }
 };

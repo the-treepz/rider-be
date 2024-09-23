@@ -26,7 +26,7 @@ class RiderController {
               firstName: user.firstName,
               lastName: user.lastName,
               phoneNumber: user.phoneNumber,
-              business: user.business || null,
+              business: {name: user.business.name,} ,
             }
           : {
               status: user.status,

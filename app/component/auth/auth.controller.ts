@@ -43,7 +43,7 @@ class AuthController {
     const wallet = await WalletService.create(findUsr._id);
     await RiderService.update(findUsr._id, { wallet: wallet._id });
     const result = await OtpService.generateOtpDetail();
-   return  RiderService.update(findUsr._id, {
+    return RiderService.update(findUsr._id, {
       otp: result.otp,
     });
   };
@@ -60,7 +60,7 @@ class AuthController {
   };
   public resetPassword = async (request: Request, response: Response) => {
     const result = await OtpService.checkOtp(request.body.otp);
-    console.log(result, 'reset password')
+    console.log(result, 'reset password');
     const findUser = await RiderService.findOne({ otp: result.otpId });
     const { token } = await AuthHelper.createToken(findUser);
     ResponseHandler.SuccessResponse(
