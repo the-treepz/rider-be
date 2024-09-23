@@ -1,4 +1,5 @@
 import { TRIP } from '../../lib/url';
+export const GET_TRIP = `${TRIP}`;
 
 export const GET_TRIPS = `${TRIP}s`;
 export const BOOK_TRIP = `${TRIP}/book`;
@@ -11,3 +12,4 @@ export const FARE_ESTIMATE = `${TRIP}/estimate-fare`;
 export const DRIVERS_AND_FARE = `${TRIP}/drivers-and-fare`;
 export const CONFIRM_TRIP = `${TRIP}/confirm`;
 export const CANCEL = `${TRIP}/cancel`;
+export const UPCOMING_TRIPS = `${TRIP}/upcoming`;

@@ -36,7 +36,7 @@ const getNearbyPlaces = async (
 };
 
 // Example usage
-const apiKey = 'AIzaSyC_KxPCilUI0lczmTaMdo5yEXn9sXGUVWc';
+const apiKey = 'AIzaSyDBZbfRGoSBKrvxsvT21ow55jTqgawBCF8';
 const location = { lat: 6.5244, lng: 3.3792 }; // Lagos, Nigeria
 const radius = 1500; // In meters
 // const type = 'restaurant'; // Type of place, e.g., restaurant, cafe, etc.
@@ -48,3 +48,23 @@ getNearbyPlaces(apiKey, location, radius)
   .catch((error) => {
     console.error('Error:', error);
   });
+
+export const getLocationFromCoordinates = async (
+  latitude: number,
+  longitude: number,
+) => {
+  const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+
+  try {
+    const response = await axios.get(url);
+    if (response.data.status === 'OK') {
+      return response.data.results[0].formatted_address; // Return the formatted address
+    } else {
+      return 'N/A';
+    }
+  } catch (error) {
+
+    return null;
+  }
+};

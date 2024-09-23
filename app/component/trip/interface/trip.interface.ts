@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import { RiderInterface } from '../../user/interface/rider.interface';
 import { UnknownInterface } from '../../../lib/unknown.interface';
+import { DriverInterface } from '../../driver/interface/driver.interface';
 
 export interface TripInterface {
   _id: Types.ObjectId;
@@ -21,17 +22,29 @@ export interface FindTripInterface {
   checkOutTime?: Date | UnknownInterface;
   checkInTime?: UnknownInterface;
 }
-export interface CreateTripInerfacee {
+export interface CreateTripInterface {
   rider: RiderInterface['_id'];
-  checkInTime: Date;
-  checkInType: string;
-}
-
-export interface WeeklyChecInInterface {
-  rider: RiderInterface['_id'];
-  checkInTime: Date; // The time the weekly check-in is created
-  checkInType: string;
-  checkInDates: any;
+  pickUpLocation?: {
+    latitude: number;
+    longitude: number;
+  };
+  dropOffLocation?: {
+    latitude: number;
+    longitude: number;
+  };
+  driver?: DriverInterface['_id'];
+  estimatedPickUpTime?: Date | UnknownInterface; // Consider using Date for actual time
+  estimatedDropOffTime?: Date | UnknownInterface; // Optional for one-way trips
+  tripType?: string; // 'round' | 'one-way';
+  bookingFor?: string; // 'self' | 'others';
+  details?: {
+    name: string; // Required if booking for others
+    phoneNumber: string; // Required if booking for others
+  };
+  checkInTime?: Date | UnknownInterface;
+  checkInType?: string;
+  fare?: number;
+  status?: string;
 }
 
 export interface WeekdlyCheckoutInterface {

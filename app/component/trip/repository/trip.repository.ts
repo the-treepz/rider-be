@@ -1,6 +1,6 @@
 import * as type from '../interface/trip.interface';
 import TripModel from './trip.model';
-import { CreateTripInerfacee } from '../interface/trip.interface';
+import { CreateTripInterface } from '../interface/trip.interface';
 import { UnknownInterface } from '../../../lib/unknown.interface';
 import { RiderInterface } from '../../user/interface/rider.interface';
 
@@ -30,7 +30,16 @@ class TripRepository {
 
   public static async findOne(query: type.FindTripInterface) {
     try {
-      return TripModel.findOne(query);
+      return TripModel.findOne(query)
+        .populate([
+          {
+            path: 'driver',
+            select:
+              'firstName lastName vehicle.licensePlate vehicle.make vehicle.model', // Specify fields to return
+          },
+          { path: 'rider', select: 'firstName lastName' },
+        ])
+        .select('pickUpLocation dropOffLocation fare status'); // Specify trip fields to return
     } catch (e) {
       return e;
     }
@@ -42,7 +51,7 @@ class TripRepository {
       return e;
     }
   }
-  public static async create(query: type.CreateTripInerfacee) {
+  public static async create(query: type.CreateTripInterface) {
     try {
       return TripModel.create(query);
     } catch (e) {
@@ -60,7 +69,7 @@ class TripRepository {
       return e;
     }
   }
-  public static async weeklyCheckIn(data: CreateTripInerfacee) {
+  public static async weeklyCheckIn(data: CreateTripInterface) {
     try {
       return TripModel.create(data);
     } catch (e) {

@@ -28,6 +28,24 @@ const TripValidation = {
         longitude: Joi.number().required(),
       }).required(),
       driver: Joi.string().required(),
+      estimatedPickUpTime: Joi.string().required(),
+      estimatedDropOffTime: Joi.string(),
+      tripType: Joi.string().required().valid('round', 'one-way'), // Must be either 'self' or 'others'
+      bookingFor: Joi.string()
+        .valid('self', 'others') // Must be either 'self' or 'others'
+        .required(), // Make it required
+      details: Joi.object().when(
+        Joi.object({ bookingFor: 'others' }).unknown(),
+        {
+          then: Joi.object({
+            name: Joi.string().required(), // Name is required when booking for others
+            phoneNumber: Joi.string()
+              .pattern(/^[0-9]{10}$/) // Example pattern for a 10-digit phone number
+              .required(), // Phone number is required
+          }).required(), // Make the details object required if booking for others
+          otherwise: Joi.forbidden(), // No additional details allowed when booking for self
+        },
+      ),
     });
     return AppValidation.bodyBaseValidator(schema, request, response, next);
   },

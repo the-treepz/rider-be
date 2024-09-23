@@ -3,9 +3,9 @@ import TripService from './trip.service';
 import { ClientError } from '../../exception/client.error';
 import ResponseHandler from '../../lib/response-handler';
 import RiderService from '../user/rider.service';
-import TripModel, { driver_STATUS_ENUM } from './repository/trip.model';
+import TripModel, { TRIP_STATUS_ENUM } from './repository/trip.model';
 import RiderModel from '../user/repository/rider.model';
-import { TripInterface } from './interface/trip.interface';
+import { CreateTripInterface, TripInterface } from './interface/trip.interface';
 import DriverModel, {
   DRIVER_STATUS_ENUM,
 } from '../driver/repository/driver.model';
@@ -13,6 +13,7 @@ import SharedHelper from '../../lib/shared.helper';
 import WalletModel from '../wallet/wallet.model';
 import TripHelper from './trip.helper';
 import DriverService from '../driver/driver.service';
+import { getLocationFromCoordinates } from '../../places';
 
 class TripController {
   public dailyCheckIn = async (request: Request, response: Response) => {
@@ -140,47 +141,21 @@ class TripController {
       dropOffLocation.latitude,
       dropOffLocation.longitude,
     );
-    // 2. Fetch nearby drivers based on pickup location (e.g., within 5km radius)
-    const nearbyDrivers = await DriverModel.find({
-      location: {
-        $geoWithin: {
-          $centerSphere: [
-            [pickUpLocation.longitude, pickUpLocation.latitude],
-            5 / 6371,
-          ], // 5 km radius
-        },
-      },
-    });
-    // 3. For each driver, calculate their individual fare
-    const driversWithFare = nearbyDrivers.map((driver) => {
-      console.log(driver, 'one driber');
-      // If the location exists, proceed with distance and fare calculation
-      const driverDistanceToRider = TripHelper.calculateDistance(
-        pickUpLocation.latitude,
-        pickUpLocation.longitude,
-        driver.location.coordinates[1], // Latitude
-        driver.location.coordinates[0], // Longitude
-      );
+    // 2. Fetch all available drivers
+    const availableDrivers = await DriverModel.find({
+      status: DRIVER_STATUS_ENUM.AVALIABLE,
+    }); // Adjust query as needed
 
-      // Add additional cost based on driver's proximity to rider (e.g., ₦50/km)
-      const additionalDriverFare = driverDistanceToRider * 50; // Adjust this factor as needed
+    // 3. Prepare the response with calculated fare
+    const driversWithFare = availableDrivers.map((driver) => ({
+      driverName: driver.firstName,
+      carModel: driver.vehicle.model,
+      _id: driver._id,
+      finalFare: fareDetails.estimatedFare, // Same fare for all drivers
+      currency: 'NGN',
+    }));
 
-      // Final fare is trip fare + driver proximity fare
-      const finalFare =
-        parseFloat(fareDetails.estimatedFare) + additionalDriverFare;
-
-      return {
-        driverName: driver.firstName,
-        carModel: driver.vehicle.model,
-        _id: driver._id,
-        driverDistanceToRider: driverDistanceToRider, // Distance in km
-        finalFare: finalFare.toFixed(2), // Fare for this driver
-        currency: 'NGN',
-      };
-    });
-
-    console.log(nearbyDrivers, 'nearbyDrivers');
-    return ResponseHandler.OkResponse(response, 'FETCHED near by drivers', {
+    return ResponseHandler.OkResponse(response, 'FETCHED available drivers', {
       tripDistance: fareDetails.distance, // Distance for the trip
       estimatedTripFare: fareDetails.estimatedFare, // Base fare for the trip
       drivers: driversWithFare,
@@ -213,8 +188,18 @@ class TripController {
     return ResponseHandler.CreatedResponse(response, 'trip booked');
   };
   public confirmTrip = async (request: Request, response: Response) => {
-    // 3. Calculate the fare
-    const { pickUpLocation, dropOffLocation, driver } = request.body;
+    const {
+      pickUpLocation,
+      dropOffLocation,
+      driver,
+      tripType,
+      bookingFor,
+      details,
+      estimatedPickUpTime,
+      estimatedDropOffTime,
+    } = request.body;
+    if (tripType === 'round' && !estimatedDropOffTime)
+      throw new ClientError('drop off time is required');
     const fareDetails = TripHelper.calculateFare(
       pickUpLocation.latitude,
       pickUpLocation.longitude,
@@ -224,7 +209,6 @@ class TripController {
     const findDriver = await DriverModel.findOne({
       _id: SharedHelper.convertStringToObjectId(request.body.driver),
     });
-    console.log(findDriver, 'the driver');
     if (!findDriver) throw new ClientError('driver does not exist');
     const findUser = await RiderService.findOne({ _id: request.user.id });
     if (!findUser.wallet) {
@@ -238,29 +222,57 @@ class TripController {
     const finalFare = totalFare + totalFare;
     if (findUserAgaian.wallet.amount < finalFare)
       throw new ClientError('Insufficient funds in wallet.');
-    console.log(findUserAgaian.wallet, 'findUserAgaian.wallet');
-    const deduct = await WalletModel.findByIdAndUpdate(
+    await WalletModel.findByIdAndUpdate(
       findUserAgaian.wallet._id,
       { amount: findUserAgaian.wallet.amount - finalFare },
       { new: true },
     );
-    // 5. Deduct the amount from the rider's wallet
-    console.log(deduct, 'thededuct');
-    // 6. Create the trip
-    const createtrip = await TripModel.create({
+    const tripData: {
+      pickUpLocation: any;
+      dropOffLocation: any;
+      rider: any;
+      driver: any;
+      fare: number;
+      status: string;
+      bookingFor: string;
+      estimatedPickUpTime?: CreateTripInterface['estimatedPickUpTime']; // Optional
+      estimatedDropOffTime?: CreateTripInterface['estimatedDropOffTime']; // Optional
+      details?: CreateTripInterface['details']; // Optional
+      tripType: string;
+    } = {
       pickUpLocation,
       dropOffLocation,
       rider: request.user.id,
       driver,
       fare: finalFare,
-      status: driver_STATUS_ENUM.CONFIRMED,
-    });
+      status:
+        tripType === 'round'
+          ? TRIP_STATUS_ENUM.SCHEDULED
+          : TRIP_STATUS_ENUM.CONFIRMED,
+      bookingFor,
+      tripType,
+    };
+
+    // Set common properties
+    tripData.estimatedPickUpTime = estimatedPickUpTime; // Set for both types
+
+    if (tripType === 'round') {
+      tripData.estimatedDropOffTime = estimatedDropOffTime; // Set for round trips
+    }
+
+    if (bookingFor === 'others') {
+      tripData.details = details; // Include details only for "others" booking
+    }
+
+    const createTrip = await TripService.create(tripData);
+    console.log(createTrip, 'the trip created');
     await DriverModel.findByIdAndUpdate(driver, {
       status: DRIVER_STATUS_ENUM.BUSY,
     });
-    ResponseHandler.CreatedResponse(response, 'trip boooked', {
+    ResponseHandler.CreatedResponse(response, 'trip booked', {
       trip: {
-        _id: createtrip._id,
+        _id: createTrip._id,
+        scheduledTime: createTrip.scheduledTime,
         fare: finalFare,
         driver: {
           name: findDriver.firstName,
@@ -270,12 +282,12 @@ class TripController {
     });
     await RiderModel.findByIdAndUpdate(
       request.user.id,
-      { $push: { trips: createtrip._id } },
+      { $push: { trips: createTrip._id } },
       { new: true }, // Option to return the updated document
     );
     return DriverModel.findByIdAndUpdate(
       findDriver._id,
-      { $push: { trips: createtrip._id } },
+      { $push: { trips: createTrip._id } },
       { new: true }, // Option to return the updated document
     );
   };
@@ -298,9 +310,58 @@ class TripController {
     });
     await RiderService.updateToPull(request.user.id, { trips: findTripe._id });
     const trip = await TripModel.findByIdAndUpdate(findTripe._id, {
-      status: driver_STATUS_ENUM.CANCELED,
+      status: TRIP_STATUS_ENUM.CANCELED,
     });
     console.log(trip, 'the can');
+  };
+  public getTrip = async (request: Request, response: Response) => {
+    if (!request.params.tripId) throw new ClientError('trip id is required');
+    const findTripe = await TripService.find(
+      { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
+      true,
+    );
+    const pickUpLocation = await getLocationFromCoordinates(
+      findTripe.pickUpLocation.latitude,
+      findTripe.pickUpLocation.longitude,
+    );
+    console.log(pickUpLocation, 'pickUpLocation');
+    const dropOff = await getLocationFromCoordinates(
+      findTripe.dropOffLocation.latitude,
+      findTripe.dropOffLocation.longitude,
+    );
+    console.log(dropOff, 'dropOff');
+
+    return ResponseHandler.OkResponse(response, 'fetched trip', {
+      trip: {
+        dropOffLocation: dropOff,
+        pickUpLocation: pickUpLocation,
+        status: findTripe.status,
+        rider: {
+          firstName: findTripe.firstName,
+          lastName: findTripe.lastName,
+        },
+        driver: {
+          vehicle: {
+            make: findTripe.driver.vehicle.make,
+            model: findTripe.driver.vehicle.model,
+            licensePlate: findTripe.driver.vehicle.licensePlate,
+          },
+          firstName: findTripe.driver.firstName,
+          lastName: findTripe.driver.lastName,
+        },
+      },
+    });
+  };
+  public getUpcomingTrips = async (request: Request, response: Response) => {
+    const upcomingTrips = await TripModel.find({
+      rider: request.user.id,
+      status: TRIP_STATUS_ENUM.SCHEDULED,
+    }).populate('driver'); // Populate driver details
+    return ResponseHandler.OkResponse(
+      response,
+      'Upcoming trips fetched successfully.',
+      { upcomingTrips },
+    );
   };
 }
 

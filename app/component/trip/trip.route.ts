@@ -9,7 +9,9 @@ import {
   CONFIRM_TRIP,
   DRIVERS_AND_FARE,
   FARE_ESTIMATE,
+  GET_TRIPS,
   PICK_DRIVER,
+  UPCOMING_TRIPS,
 } from './trip.url';
 
 /**
@@ -26,6 +28,12 @@ class TripRoute {
   public tripController: TripController = new TripController();
 
   public routes = (app: Application): void => {
+    app
+      .route(`${url.UPCOMING_TRIPS}`)
+      .get(
+        asyncHandler(requireAuthorization),
+        asyncHandler(this.tripController.getUpcomingTrips),
+      );
     app
       .route(`${url.DAILY_CHECK_IN}`)
       .post(
@@ -83,6 +91,12 @@ class TripRoute {
         asyncHandler(requireAuthorization),
         asyncHandler(TripValidation.confirmTrip),
         asyncHandler(this.tripController.bookTrip),
+      );
+    app
+      .route(`${url.GET_TRIP}/:tripId`)
+      .get(
+        asyncHandler(requireAuthorization),
+        asyncHandler(this.tripController.getTrip),
       );
     app
       .route(`${url.DRIVERS_AND_FARE}`)

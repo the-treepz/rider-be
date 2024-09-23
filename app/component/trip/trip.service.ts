@@ -27,7 +27,7 @@ const TripService = {
     }
     return TripRepository.findOne(body);
   },
-  async create(body: type.CreateTripInerfacee) {
+  async create(body: type.CreateTripInterface) {
     return TripRepository.create(body);
   },
   async dailyCheckOut(user: RiderInterface['_id']) {
