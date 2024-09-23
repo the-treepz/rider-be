@@ -50,13 +50,15 @@ class TripController {
         return new Date(date.setUTCHours(0, 0, 0, 0));
       },
     );
+    console.log(checkInDateObjects, 'checkInDateObjects')
     const existingWeeklyTrips = await TripService.find({
       rider: request.user.id,
       checkOutTime: null,
       checkInType: 'Weekly',
       checkInTime: { $in: checkInDateObjects },
     });
-    if (existingWeeklyTrips.length > 0)
+    console.log(existingWeeklyTrips, 'existingWeeklyTrips')
+    if (existingWeeklyTrips && existingWeeklyTrips.length > 0)
       throw new ClientError(
         'Employee already has weekly check-ins for some selected dates.',
       );

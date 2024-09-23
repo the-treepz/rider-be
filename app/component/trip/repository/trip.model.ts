@@ -14,7 +14,8 @@ const TripSchema = new Schema(
     status: {
       type: String,
       enum: [
-        TRIP_STATUS_ENUM.CONFIRMED,
+          TRIP_STATUS_ENUM.CONFIRMED,
+          TRIP_STATUS_ENUM.PENDING,
         TRIP_STATUS_ENUM.CANCELED,
         TRIP_STATUS_ENUM.SCHEDULED,
       ],
