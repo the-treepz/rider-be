@@ -4,6 +4,19 @@ import AuthEmailHelper from './auth-email.helper';
 import { RiderInterface } from '../user/interface/rider.interface';
 
 const AuthEmail = {
+  async sendWelcomeEmailToUser(
+    email: RiderInterface['email'],
+    firstName: string,
+    otp: string,
+  ) {
+    return Email.sendEmail(
+      AuthEmailHelper.createWelcomeEmial({
+        email,
+        firstName,
+        otp,
+      }),
+    );
+  },
   async sendPasswordResetted(
     email: RiderInterface['email'],
     firstName: string,

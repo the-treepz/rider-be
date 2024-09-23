@@ -9,6 +9,7 @@ import WalletService from '../wallet/wallet.service';
 import AuthHelper from './auth.helper';
 import OtpService from '../otp/otp.service';
 import { USER_STATUS_ENUM } from '../user/repository/rider.model';
+import AuthEmail from './auth.email';
 
 class AuthController {
   public login = async (request: Request, response: Response) => {
@@ -43,9 +44,14 @@ class AuthController {
     const wallet = await WalletService.create(findUsr._id);
     await RiderService.update(findUsr._id, { wallet: wallet._id });
     const result = await OtpService.generateOtpDetail();
-    return RiderService.update(findUsr._id, {
+    await RiderService.update(findUsr._id, {
       otp: result.otp,
     });
+    return AuthEmail.sendWelcomeEmailToUser(
+      findUsr.email,
+      findUsr.firstName,
+      result.otp,
+    );
   };
   public forgotPassword = async (request: Request, response: Response) => {
     const user = await RiderService.findOne({
@@ -60,7 +66,6 @@ class AuthController {
   };
   public resetPassword = async (request: Request, response: Response) => {
     const result = await OtpService.checkOtp(request.body.otp);
-    console.log(result, 'reset password');
     const findUser = await RiderService.findOne({ otp: result.otpId });
     const { token } = await AuthHelper.createToken(findUser);
     ResponseHandler.SuccessResponse(

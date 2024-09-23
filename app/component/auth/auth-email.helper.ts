@@ -23,6 +23,25 @@ const AuthEmailHelper = {
       from: EmailHelper.getFromEmail(),
     };
   },
+  createWelcomeEmial(data: {
+    email: RiderInterface['email'];
+    firstName: string;
+    otp: string;
+  }) {
+    const { email, firstName, otp } = data;
+    return {
+      to: [email],
+      subject: EMAIL_SUBJECT.WELCOME_TO_TREEPZ_CONFIRM_EMAIL,
+      html: EmailTemplatesHelper.generateTemplate(
+        {
+          firstName,
+          otp,
+        },
+        'welcome.html',
+      ),
+      from: EmailHelper.getFromEmail(),
+    };
+  },
   createForgotPasswordOtp(data: {
     email: RiderInterface['email'];
     firstName: RiderInterface['firstName'];
