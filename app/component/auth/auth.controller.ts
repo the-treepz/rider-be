@@ -41,7 +41,11 @@ class AuthController {
       email: SharedHelper.lowerCase(request.body.email),
     });
     const wallet = await WalletService.create(findUsr._id);
-    return RiderService.update(findUsr._id, { wallet: wallet._id });
+    await RiderService.update(findUsr._id, { wallet: wallet._id });
+    const result = await OtpService.generateOtpDetail();
+   return  RiderService.update(findUsr._id, {
+      otp: result.otp,
+    });
   };
   public forgotPassword = async (request: Request, response: Response) => {
     const user = await RiderService.findOne({
@@ -56,7 +60,8 @@ class AuthController {
   };
   public resetPassword = async (request: Request, response: Response) => {
     const result = await OtpService.checkOtp(request.body.otp);
-    const findUser = await RiderService.findOne({ otpId: result.otpId });
+    console.log(result, 'reset password')
+    const findUser = await RiderService.findOne({ otp: result.otpId });
     const { token } = await AuthHelper.createToken(findUser);
     ResponseHandler.SuccessResponse(
       response,

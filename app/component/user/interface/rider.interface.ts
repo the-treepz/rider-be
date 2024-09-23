@@ -18,7 +18,7 @@ export interface FindUserInterface {
   email?: string;
   phoneNumber?: string;
   _id?: RiderInterface['_id'];
-  otpId?: string;
+  otp?: string;
 }
 export interface CreateRiderInterface {
   email: string;
@@ -32,7 +32,7 @@ export interface UpdateUserInterface {
   firstName?: string;
   lastName?: string;
   status?: string;
-  otpId?: string;
+  otp?: string;
   password?: string;
   trips?: TripInterface['_id'] | Types.ObjectId[]; // Update to an array of ObjectId
   wallet?: WalletInterface['_id'];

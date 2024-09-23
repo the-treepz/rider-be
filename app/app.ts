@@ -13,18 +13,17 @@ import errorMiddleware from './middleware/error.middleware';
 import SharedHelper from './lib/shared.helper';
 import RiderRoute from './component/user/rider.route';
 import DriverRoute from './component/driver/driver.route';
+import VerificationRoute from "./component/verification/verification.route";
 
 dotenv.config();
 
 class App {
   public app: express.Application;
-
   public authRoute: AuthRoute = new AuthRoute();
-
   public businessRoute: RiderRoute = new RiderRoute();
   public driverRoute: DriverRoute = new DriverRoute();
   public tripRoute: TripRoute = new TripRoute();
-
+  public verificationRoute: VerificationRoute = new VerificationRoute();
   constructor() {
     this.app = express();
     this.config();
@@ -32,6 +31,7 @@ class App {
     this.businessRoute.routes(this.app);
     this.driverRoute.routes(this.app);
     this.tripRoute.routes(this.app);
+    this.verificationRoute.routes(this.app);
     this.app.disable('x-powered-by');
     this.app.set('trust proxy', true);
     this.app.get('/', welcomeMessage);

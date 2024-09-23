@@ -33,7 +33,7 @@ const AuthHelper = {
       otp: result.otp,
       firstName,
     });
-    return RiderService.updateWithQuery({ email }, { otpId: result.otpId });
+    return RiderService.updateWithQuery({ email }, { otp: result.otp });
   },
   async createToken(business: RiderInterface) {
     const token = Jwt.createToken(
