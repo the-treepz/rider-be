@@ -11,9 +11,11 @@ import DriverModel, {
 } from '../driver/repository/driver.model';
 import SharedHelper from '../../lib/shared.helper';
 import WalletModel from '../wallet/wallet.model';
-import TripHelper from './trip.helper';
+import TripHelper from './helper/trip.helper';
 import DriverService from '../driver/driver.service';
-import { getLocationFromCoordinates } from '../../places';
+import Maps from '../../maps';
+import TripEmail from './trip.email';
+import { RiderInterface } from '../user/interface/rider.interface';
 
 class TripController {
   public dailyCheckIn = async (request: Request, response: Response) => {
@@ -171,14 +173,11 @@ class TripController {
     });
     if (!findTrip) throw new ClientError('trip does not exist');
     const findUser = await RiderService.findOne({ _id: findTrip.rider });
-    console.log(findUser, 'seen user');
     if (!findUser.wallet) {
       const wallet = await WalletModel.create({ rider: findUser._id });
       await RiderService.update(findUser._id, { wallet: wallet._id });
     }
     const findUserAgaian = await RiderService.findOne({ _id: findTrip.rider });
-    console.log(findUserAgaian, 'the findUserAgaian');
-    console.log(findTrip, 'find tripe');
     const fee = TripHelper.calculateFare(
       findTrip.pickUpLocation.latitude,
       findTrip.pickUpLocation.longitude,
@@ -259,7 +258,6 @@ class TripController {
       tripData.details = details; // Include details only for "others" booking
     }
     const createTrip = await TripService.create(tripData);
-    console.log(createTrip, 'the trip created');
     await DriverModel.findByIdAndUpdate(driver, {
       status: DRIVER_STATUS_ENUM.BUSY,
     });
@@ -288,6 +286,20 @@ class TripController {
      * todo
      * send email to admin
      */
+    const pickUpLocationString = await Maps.getLocationFromCoordinates(
+      createTrip.pickUpLocation.latitude,
+      createTrip.pickUpLocation.longitude,
+    );
+    const dropOffLocationSring = await Maps.getLocationFromCoordinates(
+      createTrip.dropOffLocation.latitude,
+      createTrip.dropOffLocation.longitude,
+    );
+    return TripEmail.sendTripBookedEmail({
+      firstName: findUserAgaian.firstName,
+      dropOffLocation: dropOffLocationSring,
+      pickUpLocation: pickUpLocationString,
+      vehicle: findDriver.vehicle.model,
+    });
   };
   public cancelTtrip = async (request: Request, response: Response) => {
     if (!request.params.tripId)
@@ -297,7 +309,6 @@ class TripController {
       { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
       true,
     );
-    console.log(findTripe, 'seen tri');
     // 2. Check if the user is the rider of the trip
     if (findTripe.rider.toString() !== request.user.id)
       throw new ClientError('You are not authorized to cancel this trip.');
@@ -307,10 +318,9 @@ class TripController {
       status: DRIVER_STATUS_ENUM.AVALIABLE,
     });
     await RiderService.updateToPull(request.user.id, { trips: findTripe._id });
-    const trip = await TripModel.findByIdAndUpdate(findTripe._id, {
+   return  TripModel.findByIdAndUpdate(findTripe._id, {
       status: TRIP_STATUS_ENUM.CANCELED,
     });
-    console.log(trip, 'the can');
   };
   public getTrip = async (request: Request, response: Response) => {
     if (!request.params.tripId) throw new ClientError('trip id is required');
@@ -318,17 +328,14 @@ class TripController {
       { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
       true,
     );
-    const pickUpLocation = await getLocationFromCoordinates(
+    const pickUpLocation = await Maps.getLocationFromCoordinates(
       findTripe.pickUpLocation.latitude,
       findTripe.pickUpLocation.longitude,
     );
-    console.log(pickUpLocation, 'pickUpLocation');
-    const dropOff = await getLocationFromCoordinates(
+    const dropOff = await Maps.getLocationFromCoordinates(
       findTripe.dropOffLocation.latitude,
       findTripe.dropOffLocation.longitude,
     );
-    console.log(dropOff, 'dropOff');
-
     return ResponseHandler.OkResponse(response, 'fetched trip', {
       trip: {
         dropOffLocation: dropOff,

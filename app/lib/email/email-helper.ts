@@ -10,7 +10,7 @@ const EmailHelper = {
   getApplicationEmail() {
     return ['tina@treepz.com'];
   },
-  getInquiryEmail() {
+  gettripBookenEmail() {
     return ['tina@treepz.com'];
   },
 };

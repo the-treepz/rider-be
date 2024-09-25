@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import RiderService from './rider.service';
 import ResponseHandler from '../../lib/response-handler';
-import {NotFoundError} from "../../exception/not-found.error";
+import { NotFoundError } from '../../exception/not-found.error';
 
 class RiderController {
   public edit = async (request: Request, response: Response) => {
@@ -15,7 +15,7 @@ class RiderController {
   };
   public get = async (request: Request, response: Response) => {
     const user = await RiderService.findOne({ _id: request.user.id });
-    if(!user) throw new NotFoundError('user does not exist')
+    if (!user) throw new NotFoundError('user does not exist');
     return ResponseHandler.SuccessResponse(
       response,
       StatusCodes.OK,

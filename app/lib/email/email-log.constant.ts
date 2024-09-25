@@ -29,4 +29,5 @@ export const EMAIL_SUBJECT = {
   NEW_INQUIRY_TO_ADMIN: 'NEW INQUIRY',
   EMPLOYEE_INVITE: 'Employee Invite',
   WELCOME_TO_TREEPZ_CONFIRM_EMAIL: 'Welcome to treepz',
+  NEW_TRIP_BOOKED: 'Treepz: New Trip Booked',
 };

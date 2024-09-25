@@ -6,7 +6,6 @@ import Notification from './lib/notification';
 import Cron from './libraries/package/cron';
 import BusinessModel from './component/business/repository/business.model';
 import * as mongoose from 'mongoose';
-
 const APP_PORT: number = parseInt(process.env.PORT as string, 10) || 1234;
 const server = app.listen(APP_PORT, () => {
   logger.info(`Server started at ${APP_PORT}`);
