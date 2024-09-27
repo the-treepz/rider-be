@@ -15,7 +15,6 @@ import TripHelper from './helper/trip.helper';
 import DriverService from '../driver/driver.service';
 import Maps from '../../maps';
 import TripEmail from './trip.email';
-import { RiderInterface } from '../user/interface/rider.interface';
 
 class TripController {
   public dailyCheckIn = async (request: Request, response: Response) => {
@@ -134,6 +133,57 @@ class TripController {
     });
     return ResponseHandler.CreatedResponse(response, 'trip booked', trip);
   };
+  public getRecentPickUpAddresses = async (
+    request: Request,
+    response: Response,
+  ) => {
+    // Fetch recent trips for the user, selecting only pick-up locations
+    const recentTrips = await TripModel.find({
+      rider: request.user.id, // Find trips by the logged-in user
+    })
+      .select('pickUpLocation') // Only pick-up coordinates
+      .sort({ createdAt: -1 }) // Sort by most recent trips
+      .limit(5); // Limit to the 5 most recent trips
+
+    // Convert pick-up coordinates to addresses and filter out null results
+    const pickUpAddresses = await Promise.all(
+      recentTrips.map(async (trip) => {
+        if (
+          !trip.pickUpLocation ||
+          !trip.pickUpLocation.latitude ||
+          !trip.pickUpLocation.longitude
+        ) {
+          return null; // Skip trips with invalid pick-up locations
+        }
+
+        const pickUpAddress = await Maps.getLocationFromCoordinates(
+          trip.pickUpLocation.latitude,
+          trip.pickUpLocation.longitude,
+        );
+
+        if (!pickUpAddress) return null; // Skip trips where address lookup failed
+
+        return {
+          _id: trip._id, // Keep the original _id
+          pickUpLocation: trip.pickUpLocation, // Keep the original coordinates
+          pickUpAddress, // Add the converted address
+        };
+      }),
+    );
+
+    // Filter out null results (invalid trips with missing locations or addresses)
+    const validPickUpAddresses = pickUpAddresses.filter(
+      (address) => address !== null,
+    );
+
+    // Respond with the valid pick-up addresses
+    return ResponseHandler.OkResponse(
+      response,
+      'Recent pick-up addresses fetched successfully.',
+      validPickUpAddresses,
+    );
+  };
+
   public getDriverAndFare = async (request: Request, response: Response) => {
     const { pickUpLocation, dropOffLocation } = request.body;
     // 1. Calculate fare
@@ -163,28 +213,71 @@ class TripController {
       drivers: driversWithFare,
     });
   };
-  public selectDriver = async (request: Request, response: Response) => {
-    const findDriver = await DriverModel.findOne({
-      _id: SharedHelper.convertStringToObjectId(request.body.driver),
-    });
-    if (!findDriver) throw new ClientError('driver does not exist');
-    const findTrip = await TripModel.findOne({
-      _id: SharedHelper.convertStringToObjectId(request.body.trip),
-    });
-    if (!findTrip) throw new ClientError('trip does not exist');
-    const findUser = await RiderService.findOne({ _id: findTrip.rider });
-    if (!findUser.wallet) {
-      const wallet = await WalletModel.create({ rider: findUser._id });
-      await RiderService.update(findUser._id, { wallet: wallet._id });
-    }
-    const findUserAgaian = await RiderService.findOne({ _id: findTrip.rider });
-    const fee = TripHelper.calculateFare(
-      findTrip.pickUpLocation.latitude,
-      findTrip.pickUpLocation.longitude,
-      findTrip.dropOffLocation.latitude,
-      findTrip.dropOffLocation.longitude,
+  public cancelTtrip = async (request: Request, response: Response) => {
+    if (!request.params.tripId)
+      throw new ClientError('trip id is required to cancel trips');
+    const findTripe = await TripService.find(
+      { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
+      true,
     );
-    return ResponseHandler.CreatedResponse(response, 'trip booked');
+    // 2. Check if the user is the rider of the trip
+    if (findTripe.rider.toString() !== request.user.id)
+      throw new ClientError('You are not authorized to cancel this trip.');
+    ResponseHandler.OkResponse(response, 'trip canceled');
+    const driver = await DriverService.findOne({ _id: findTripe.driver });
+    await DriverService.update(driver._id, {
+      status: DRIVER_STATUS_ENUM.AVALIABLE,
+    });
+    await RiderService.updateToPull(request.user.id, { trips: findTripe._id });
+    return TripModel.findByIdAndUpdate(findTripe._id, {
+      status: TRIP_STATUS_ENUM.CANCELED,
+    });
+  };
+  public getTrip = async (request: Request, response: Response) => {
+    if (!request.params.tripId) throw new ClientError('trip id is required');
+    const findTripe = await TripService.find(
+      { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
+      true,
+    );
+    const pickUpLocation = await Maps.getLocationFromCoordinates(
+      findTripe.pickUpLocation.latitude,
+      findTripe.pickUpLocation.longitude,
+    );
+    const dropOff = await Maps.getLocationFromCoordinates(
+      findTripe.dropOffLocation.latitude,
+      findTripe.dropOffLocation.longitude,
+    );
+    return ResponseHandler.OkResponse(response, 'fetched trip', {
+      trip: {
+        dropOffLocation: dropOff,
+        pickUpLocation: pickUpLocation,
+        status: findTripe.status,
+        rider: {
+          firstName: findTripe.firstName,
+          lastName: findTripe.lastName,
+        },
+        driver: {
+          vehicle: {
+            make: findTripe.driver.vehicle.make,
+            model: findTripe.driver.vehicle.model,
+            licensePlate: findTripe.driver.vehicle.licensePlate,
+          },
+          firstName: findTripe.driver.firstName,
+          lastName: findTripe.driver.lastName,
+        },
+      },
+    });
+  };
+  public getUpcomingTrips = async (request: Request, response: Response) => {
+    const upcomingTrips = await TripModel.find({
+      rider: request.user.id,
+      status: TRIP_STATUS_ENUM.SCHEDULED,
+    }).populate('driver'); // Populate driver details
+    return ResponseHandler.OkResponse(
+      response,
+      'Upcoming trips fetched successfully.',
+      { upcomingTrips },
+    );
   };
   public confirmTrip = async (request: Request, response: Response) => {
     const {
@@ -300,73 +393,6 @@ class TripController {
       pickUpLocation: pickUpLocationString,
       vehicle: findDriver.vehicle.model,
     });
-  };
-  public cancelTtrip = async (request: Request, response: Response) => {
-    if (!request.params.tripId)
-      throw new ClientError('trip id is required to cancel trips');
-
-    const findTripe = await TripService.find(
-      { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
-      true,
-    );
-    // 2. Check if the user is the rider of the trip
-    if (findTripe.rider.toString() !== request.user.id)
-      throw new ClientError('You are not authorized to cancel this trip.');
-    ResponseHandler.OkResponse(response, 'trip canceled');
-    const driver = await DriverService.findOne({ _id: findTripe.driver });
-    await DriverService.update(driver._id, {
-      status: DRIVER_STATUS_ENUM.AVALIABLE,
-    });
-    await RiderService.updateToPull(request.user.id, { trips: findTripe._id });
-   return  TripModel.findByIdAndUpdate(findTripe._id, {
-      status: TRIP_STATUS_ENUM.CANCELED,
-    });
-  };
-  public getTrip = async (request: Request, response: Response) => {
-    if (!request.params.tripId) throw new ClientError('trip id is required');
-    const findTripe = await TripService.find(
-      { _id: SharedHelper.convertStringToObjectId(request.params.tripId) },
-      true,
-    );
-    const pickUpLocation = await Maps.getLocationFromCoordinates(
-      findTripe.pickUpLocation.latitude,
-      findTripe.pickUpLocation.longitude,
-    );
-    const dropOff = await Maps.getLocationFromCoordinates(
-      findTripe.dropOffLocation.latitude,
-      findTripe.dropOffLocation.longitude,
-    );
-    return ResponseHandler.OkResponse(response, 'fetched trip', {
-      trip: {
-        dropOffLocation: dropOff,
-        pickUpLocation: pickUpLocation,
-        status: findTripe.status,
-        rider: {
-          firstName: findTripe.firstName,
-          lastName: findTripe.lastName,
-        },
-        driver: {
-          vehicle: {
-            make: findTripe.driver.vehicle.make,
-            model: findTripe.driver.vehicle.model,
-            licensePlate: findTripe.driver.vehicle.licensePlate,
-          },
-          firstName: findTripe.driver.firstName,
-          lastName: findTripe.driver.lastName,
-        },
-      },
-    });
-  };
-  public getUpcomingTrips = async (request: Request, response: Response) => {
-    const upcomingTrips = await TripModel.find({
-      rider: request.user.id,
-      status: TRIP_STATUS_ENUM.SCHEDULED,
-    }).populate('driver'); // Populate driver details
-    return ResponseHandler.OkResponse(
-      response,
-      'Upcoming trips fetched successfully.',
-      { upcomingTrips },
-    );
   };
 }
 

@@ -1,18 +1,9 @@
-import TripController from './trip.controller';
-import { Application } from 'express';
-import { asyncHandler } from '../../middleware/async-handler';
-import requireAuthorization from '../../middleware/require-authorization';
-import * as url from './trip.url';
-import TripValidation from './trip.validation';
-import {
-  CANCEL,
-  CONFIRM_TRIP,
-  DRIVERS_AND_FARE,
-  FARE_ESTIMATE,
-  GET_TRIPS,
-  PICK_DRIVER,
-  UPCOMING_TRIPS,
-} from './trip.url';
+import TripController from "./trip.controller";
+import {Application} from "express";
+import * as url from "./trip.url";
+import {asyncHandler} from "../../middleware/async-handler";
+import requireAuthorization from "../../middleware/require-authorization";
+import TripValidation from "./trip.validation";
 
 /**
  * todos
@@ -29,88 +20,88 @@ class TripRoute {
 
   public routes = (app: Application): void => {
     app
-      .route(`${url.UPCOMING_TRIPS}`)
-      .get(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.getUpcomingTrips),
-      );
+        .route(`${url.UPCOMING_TRIPS}`)
+        .get(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.getUpcomingTrips),
+        );
     app
-      .route(`${url.DAILY_CHECK_IN}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.dailyCheckIn),
-      );
+        .route(`${url.DAILY_CHECK_IN}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.dailyCheckIn),
+        );
     app
-      .route(`${url.DAILY_CHECK_OUT}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.dailyCheckOut),
-      );
+        .route(`${url.DAILY_CHECK_OUT}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.dailyCheckOut),
+        );
     app
-      .route(`${url.WEEKLY_CHECK_IN}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.weeklyCheckIn),
-      );
+        .route(`${url.WEEKLY_CHECK_IN}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.weeklyCheckIn),
+        );
     app
-      .route(`${url.WEEKDLY_CHECK_OUT}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.weeklyCheckOut),
-      );
+        .route(`${url.WEEKDLY_CHECK_OUT}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.weeklyCheckOut),
+        );
     app
-      .route(`${url.GET_TRIPS}`)
-      .get(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.getTrips),
-      );
+        .route(`${url.GET_TRIPS}`)
+        .get(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.getTrips),
+        );
     app
-      .route(`${url.BOOK_TRIP}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(TripValidation.bookTrip),
-        asyncHandler(this.tripController.bookTrip),
-      );
+        .route(`${url.BOOK_TRIP}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(TripValidation.bookTrip),
+            asyncHandler(this.tripController.bookTrip),
+        );
+
     app
-      .route(`${url.PICK_DRIVER}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(TripValidation.selectDriver),
-        asyncHandler(this.tripController.selectDriver),
-      );
+        .route(`${url.CONFIRM_TRIP}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(TripValidation.confirmTrip),
+            asyncHandler(this.tripController.confirmTrip),
+        );
     app
-      .route(`${url.CONFIRM_TRIP}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(TripValidation.confirmTrip),
-        asyncHandler(this.tripController.confirmTrip),
-      );
+        .route(`${url.FARE_ESTIMATE}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(TripValidation.confirmTrip),
+            asyncHandler(this.tripController.bookTrip),
+        );
     app
-      .route(`${url.FARE_ESTIMATE}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(TripValidation.confirmTrip),
-        asyncHandler(this.tripController.bookTrip),
-      );
+        .route(`${url.GET_RECENT_PICKUPS_ADDRESSES}`)
+        .get(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.getRecentPickUpAddresses),
+        );
     app
-      .route(`${url.GET_TRIP}/:tripId`)
-      .get(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.getTrip),
-      );
+        .route(`${url.DRIVERS_AND_FARE}`)
+        .post(
+            asyncHandler(requireAuthorization),
+            asyncHandler(TripValidation.bookTrip),
+            asyncHandler(this.tripController.getDriverAndFare),
+        );
     app
-      .route(`${url.DRIVERS_AND_FARE}`)
-      .post(
-        asyncHandler(requireAuthorization),
-        asyncHandler(TripValidation.bookTrip),
-        asyncHandler(this.tripController.getDriverAndFare),
-      );
+        .route(`${url.CANCEL}/:tripId`)
+        .put(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.cancelTtrip),
+        );
     app
-      .route(`${url.CANCEL}/:tripId`)
-      .put(
-        asyncHandler(requireAuthorization),
-        asyncHandler(this.tripController.cancelTtrip),
-      );
+        .route(`${url.GET_TRIP}/:tripId`)
+        .get(
+            asyncHandler(requireAuthorization),
+            asyncHandler(this.tripController.getTrip),
+        );
   };
 }
 

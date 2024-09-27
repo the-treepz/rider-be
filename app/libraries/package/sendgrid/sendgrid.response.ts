@@ -5,7 +5,6 @@ import CustomError from '../../../exception/custom.error';
 
 const SendgridResponse = {
   checkResponse(result: UnknownInterface, errorMessage: string) {
-    console.log(result[0].statusCode, 'the respuse');
     if (result && result[0].statusCode === 202) return result;
     return this.checkErrorResponse(result, errorMessage);
   },
@@ -13,7 +12,6 @@ const SendgridResponse = {
     errorResponse: BrevoResponseInterface,
     defaultMessage: string,
   ) {
-    console.log(errorResponse, 'errorResponse');
     const status =
       errorResponse &&
       errorResponse.response &&
