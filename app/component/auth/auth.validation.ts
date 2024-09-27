@@ -45,6 +45,17 @@ const AuthValidation = {
     });
     return AppValidation.bodyBaseValidator(schema, request, response, next);
   },
+  async validateChangePassword(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ) {
+    const schema = Joi.object({
+      oldPassword: Joi.string().email().label('old Password').required(),
+      newPassword: Joi.string().email().label('new Password').required(),
+    });
+    return AppValidation.bodyBaseValidator(schema, request, response, next);
+  },
   async validateResetPassword(
     request: Request,
     response: Response,

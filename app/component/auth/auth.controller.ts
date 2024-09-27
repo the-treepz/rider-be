@@ -10,6 +10,7 @@ import AuthHelper from './auth.helper';
 import OtpService from '../otp/otp.service';
 import { USER_STATUS_ENUM } from '../user/repository/rider.model';
 import AuthEmail from './auth.email';
+import { UnAuthorizedError } from '../../exception/un-authorized.error';
 
 class AuthController {
   public login = async (request: Request, response: Response) => {
@@ -63,6 +64,31 @@ class AuthController {
       'Otp has been sent to your email',
     );
     return AuthHelper.handleForgotPassword(user.email, user.firstName);
+  };
+  public changePassword = async (request: Request, response: Response) => {
+    const { oldPassword, newPassword } = request.body;
+    const trimmedOldPassword = oldPassword.trim();
+    const trimmedNewPassword = newPassword.trim();
+    const findUser = await RiderService.findOne({ _id: request.user.id });
+    const isCorrectPassword = await Hashing.compareHashedValue(
+      trimmedOldPassword,
+      findUser.defaultPassword || findUser.password,
+    );
+    if (!isCorrectPassword)
+      throw new UnAuthorizedError('incorrect old password');
+    const hashedPassword = await Hashing.hashValue(trimmedNewPassword);
+    await RiderService.update(
+      request.user.id,
+      { password: hashedPassword, defaultPassword: null }, // Clear default password if applicable
+    );
+    return ResponseHandler.SuccessResponse(
+      response,
+      StatusCodes.OK,
+      'Password has been chnaged',
+    );
+    /**
+     * send email to user
+     */
   };
   public resetPassword = async (request: Request, response: Response) => {
     const result = await OtpService.checkOtp(request.body.otp);

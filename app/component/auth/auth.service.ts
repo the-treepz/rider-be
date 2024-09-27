@@ -13,6 +13,7 @@ const AuthService = {
   async login(data: { email: string; password: string }) {
     const { email, password } = data;
     const user = await RiderService.findOne({ email }, true);
+    if (!user) throw new NotFoundError('user does not exist');
     if (user.status !== USER_STATUS_ENUM.ACTIVE)
       throw new ClientError('user account not activated');
     if (user) return AuthHelper.handleLogin(user, password);

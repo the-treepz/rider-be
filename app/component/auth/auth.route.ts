@@ -4,6 +4,7 @@ import * as url from './auth.url';
 import { asyncHandler } from '../../middleware/async-handler';
 import AuthValidation from './auth.validation';
 import RideMiddleware from '../user/ride.middleware';
+import requireAuthorization from '../../middleware/require-authorization';
 class AuthRoute {
   public authController: AuthController = new AuthController();
 
@@ -13,6 +14,13 @@ class AuthRoute {
       .post(
         asyncHandler(AuthValidation.validateForgotPassword),
         asyncHandler(this.authController.forgotPassword),
+      );
+    app
+      .route(`${url.CHANGE_PASSWORD}`)
+      .post(
+        asyncHandler(AuthValidation.validateChangePassword),
+        asyncHandler(requireAuthorization),
+        asyncHandler(this.authController.changePassword),
       );
     app
       .route(`${url.LOGIN_USER_URL}`)

@@ -77,8 +77,6 @@ const AuthHelper = {
       trimmedProvidedPassword,
       user.password,
     );
-
-    console.log(isCorrectPassword);
     if (isCorrectPassword) {
       const { token } = await this.createToken(user);
       if (!token) throw new ServerError('Unable to create token');

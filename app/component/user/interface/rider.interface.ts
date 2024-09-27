@@ -29,6 +29,7 @@ export interface CreateRiderInterface {
 }
 
 export interface UpdateUserInterface {
+  defaultPassword?: null;
   firstName?: string;
   lastName?: string;
   status?: string;
