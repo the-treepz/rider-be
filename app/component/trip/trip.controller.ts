@@ -15,6 +15,7 @@ import TripHelper from './helper/trip.helper';
 import DriverService from '../driver/driver.service';
 import Maps from '../../maps';
 import NotificationHelper from '../notification/notification.helper';
+import { NotFoundError } from '../../exception/not-found.error';
 
 class TripController {
   public dailyCheckIn = async (request: Request, response: Response) => {
@@ -91,13 +92,25 @@ class TripController {
   };
   public getTrips = async (request: Request, response: Response) => {
     const trips = await TripService.getTrips(request.user.id);
+    console.log(trips, 'the tri');
     return ResponseHandler.OkResponse(response, 'Trips fetched successfully', {
       trips,
     });
   };
   public dailyCheckOut = async (request: Request, response: Response) => {
-    ResponseHandler.CreatedResponse(response, 'check out succesful');
-    return TripService.dailyCheckOut(request.user.id);
+    const getTrip = await TripService.findOne({
+      rider: request.user.id,
+      checkOutTime: null,
+      checkInType: 'Daily',
+    });
+    console.log(getTrip, 'getTrip');
+    if (getTrip) {
+      ResponseHandler.OkResponse(response, 'check out succesful');
+      const wh = await TripService.dailyCheckOut(request.user.id);
+      console.log(wh, 'gegg');
+      return wh;
+    }
+    throw new NotFoundError('no trip to be checked out from');
   };
   public weeklyCheckOut = async (request: Request, response: Response) => {
     const trips = await TripService.findWeeklyCheckn(request.user.id);

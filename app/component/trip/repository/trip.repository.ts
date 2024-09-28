@@ -1,5 +1,5 @@
 import * as type from '../interface/trip.interface';
-import TripModel from './trip.model';
+import TripModel, { TRIP_STATUS_ENUM } from './trip.model';
 import { CreateTripInterface } from '../interface/trip.interface';
 import { UnknownInterface } from '../../../lib/unknown.interface';
 import { RiderInterface } from '../../user/interface/rider.interface';
@@ -62,7 +62,11 @@ class TripRepository {
     try {
       return TripModel.findOneAndUpdate(
         data,
-        { checkOutTime: new Date() },
+        {
+          checkOutTime: new Date(),
+          checkOutType: 'Self',
+          status: TRIP_STATUS_ENUM.COMPLETED,
+        },
         { new: true },
       );
     } catch (e) {
@@ -88,7 +92,11 @@ class TripRepository {
     try {
       return TripModel.findOneAndUpdate(
         data,
-        { checkOutTime: new Date() },
+        {
+          checkOutTime: new Date(),
+          checkOutType: 'Self',
+          status: TRIP_STATUS_ENUM.COMPLETED,
+        },
         { new: true },
       );
     } catch (e) {

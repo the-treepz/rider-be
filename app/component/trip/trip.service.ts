@@ -1,18 +1,30 @@
 import { RiderInterface } from '../user/interface/rider.interface';
-import * as type from './interface/trip.interface';
 import TripRepository from './repository/trip.repository';
 import { UnknownInterface } from '../../lib/unknown.interface';
+import { TripInterface } from './interface/trip.interface';
+import * as type from './interface/trip.interface';
 import { NotFoundError } from '../../exception/not-found.error';
 
 const TripService = {
   async getTrips(user: RiderInterface['_id']) {
     const trips = await TripRepository.findAll(user, 0, 0);
-    return trips.map((trip: UnknownInterface) => {
+    const re = trips.map((trip: UnknownInterface) => {
       if (trip.checkInType === 'Daily') {
         const { checkInDates, ...tripWithoutCheckInDates } = trip.toObject();
         return tripWithoutCheckInDates;
       }
       return trip;
+    });
+    return re.map((one: TripInterface) => {
+      return {
+        checkoutType: one.checkoutType === 'Self' ? 'Manual' : 'Automatic',
+        status: one.status,
+        checkOutTime: one.checkOutTime,
+        id: one._id,
+        checkInTime: one.checkInTime,
+        checkInType: one.checkInType,
+        createdAt: one.createdAt,
+      };
     });
   },
   async findOne(body: type.FindTripInterface) {

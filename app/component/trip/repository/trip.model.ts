@@ -7,10 +7,17 @@ export const TRIP_STATUS_ENUM = {
   CANCELED: 'Canceled',
   PENDING: 'Pending',
   SCHEDULED: 'Scheduled',
+  COMPLETED: 'Completed',
 };
 const TripSchema = new Schema(
   {
     fare: Number,
+    checkOutType: {
+      type: String,
+      enum: ['Automatic', 'Self'],
+      default: 'Self',
+    },
+
     status: {
       type: String,
       enum: [
@@ -18,6 +25,7 @@ const TripSchema = new Schema(
         TRIP_STATUS_ENUM.PENDING,
         TRIP_STATUS_ENUM.CANCELED,
         TRIP_STATUS_ENUM.SCHEDULED,
+        TRIP_STATUS_ENUM.COMPLETED,
       ],
       default: TRIP_STATUS_ENUM.PENDING,
     },
