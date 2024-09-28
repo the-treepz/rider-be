@@ -2,12 +2,11 @@ import { RiderInterface } from '../../user/interface/rider.interface';
 import { EMAIL_SUBJECT } from '../../../lib/email/email-log.constant';
 import EmailTemplatesHelper from '../../../html/helper/email-template.helper';
 import EmailHelper from '../../../lib/email/email-helper';
-import { UnknownInterface } from '../../../lib/unknown.interface';
 export interface TripBookedInterfaceAdminEmailInterface {
   firstName: RiderInterface['firstName'];
   dropOffLocation: string;
   pickUpLocation: string;
-  vehicle: string | UnknownInterface;
+  vehicle: string;
 }
 export interface TripCanceledInterfacUserEmailInterface {
   firstName: RiderInterface['firstName'];

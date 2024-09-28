@@ -33,6 +33,25 @@ const RiderSchema = new Schema(
     defaultPassword: String,
     trips: [{ type: Schema.Types.ObjectId, ref: 'Trip' }],
     wallet: { type: Schema.Types.ObjectId, ref: 'Wallet' },
+    // Notification Preferences
+    notificationPreferences: {
+      promotions: {
+        email: { type: Boolean, default: true },
+        sms: { type: Boolean, default: true },
+        push: { type: Boolean, default: true },
+      },
+      trips: {
+        email: { type: Boolean, default: true },
+        sms: { type: Boolean, default: true },
+        push: { type: Boolean, default: true },
+      },
+      treepzProducts: {
+        email: { type: Boolean, default: false },
+        sms: { type: Boolean, default: false },
+        push: { type: Boolean, default: false },
+      },
+    },
+    deviceToken: { type: String }, // For push notifications
   },
   { timestamps: true },
 );

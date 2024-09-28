@@ -1,6 +1,6 @@
 import { Application } from 'express';
 import RiderController from './rider.controller';
-import { EDIT_USER, GET_USER } from './ridr.url';
+import { DEVICE_TOKEN, EDIT_USER, GET_USER } from './ridr.url';
 import { asyncHandler } from '../../middleware/async-handler';
 import requireAuthorization from '../../middleware/require-authorization';
 import RiderValidation from './rider.validation';
@@ -15,6 +15,12 @@ class RiderRoute {
         asyncHandler(requireAuthorization),
         asyncHandler(RiderValidation.update),
         asyncHandler(this.userController.edit),
+      );
+    app
+      .route(`${DEVICE_TOKEN}`)
+      .put(
+        asyncHandler(requireAuthorization),
+        asyncHandler(this.userController.deviceToken),
       );
     app
       .route(`${GET_USER}`)

@@ -14,6 +14,7 @@ import SharedHelper from './lib/shared.helper';
 import RiderRoute from './component/user/rider.route';
 import DriverRoute from './component/driver/driver.route';
 import VerificationRoute from './component/verification/verification.route';
+import NotificationRoute from './component/notification/notification.route';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ class App {
   public businessRoute: RiderRoute = new RiderRoute();
   public driverRoute: DriverRoute = new DriverRoute();
   public tripRoute: TripRoute = new TripRoute();
+  public notificationRoute: NotificationRoute = new NotificationRoute();
   public verificationRoute: VerificationRoute = new VerificationRoute();
   constructor() {
     this.app = express();
@@ -30,6 +32,7 @@ class App {
     this.authRoute.routes(this.app);
     this.businessRoute.routes(this.app);
     this.driverRoute.routes(this.app);
+    this.notificationRoute.routes(this.app);
     this.tripRoute.routes(this.app);
     this.verificationRoute.routes(this.app);
     this.app.disable('x-powered-by');

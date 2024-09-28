@@ -6,8 +6,7 @@ import { DriverInterface } from '../../driver/interface/driver.interface';
 export interface TripInterface {
   _id: Types.ObjectId;
   checkInType: string;
-  dropOffLocation: { latitude: number; longitude: number };
-  pickUpLocation: { latitude: number; longitude: number };
+  dropOffLocation: string;
   checkOutTime: Date;
   checkInTime: Date;
   rider: RiderInterface['_id'];

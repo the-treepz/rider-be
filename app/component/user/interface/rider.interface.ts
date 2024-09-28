@@ -13,6 +13,24 @@ export interface RiderInterface {
   alternativeEmail: string;
   defaultPassword: string;
   wallet: WalletInterface['_id'];
+  deviceToken: String;
+  notificationPreferences: {
+    promotions: {
+      email: { type: Boolean };
+      sms: { type: Boolean };
+      push: { type: Boolean };
+    };
+    trips: {
+      email: { type: Boolean };
+      sms: { type: Boolean };
+      push: { type: Boolean };
+    };
+    products: {
+      email: { type: Boolean };
+      sms: { type: Boolean };
+      push: { type: Boolean };
+    };
+  };
 }
 export interface FindUserInterface {
   email?: string;
@@ -29,6 +47,23 @@ export interface CreateRiderInterface {
 }
 
 export interface UpdateUserInterface {
+  notificationPreferences?: {
+    promotions?: {
+      email: { type?: boolean };
+      sms: { type?: boolean };
+      push: { type?: boolean };
+    };
+    trips?: {
+      email: { type?: boolean };
+      sms: { type?: boolean };
+      push: { type?: boolean };
+    };
+    products?: {
+      email: { type?: boolean };
+      sms: { type?: boolean };
+      push: { type?: boolean };
+    };
+  };
   defaultPassword?: null;
   firstName?: string;
   lastName?: string;

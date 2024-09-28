@@ -30,4 +30,5 @@ export const EMAIL_SUBJECT = {
   EMPLOYEE_INVITE: 'Employee Invite',
   WELCOME_TO_TREEPZ_CONFIRM_EMAIL: 'Welcome to treepz',
   NEW_TRIP_BOOKED: 'Treepz: New Trip Booked',
+  NEW_TRIP_CANCELED: 'Treepz: Trip Cancelled',
 };

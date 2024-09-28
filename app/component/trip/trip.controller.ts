@@ -14,7 +14,7 @@ import WalletModel from '../wallet/wallet.model';
 import TripHelper from './helper/trip.helper';
 import DriverService from '../driver/driver.service';
 import Maps from '../../maps';
-import TripEmail from './trip.email';
+import NotificationHelper from '../notification/notification.helper';
 
 class TripController {
   public dailyCheckIn = async (request: Request, response: Response) => {
@@ -221,16 +221,26 @@ class TripController {
       true,
     );
     // 2. Check if the user is the rider of the trip
-    if (findTripe.rider.toString() !== request.user.id)
+    if (findTripe.rider._id.toString() !== request.user.id)
       throw new ClientError('You are not authorized to cancel this trip.');
+    console.log(findTripe.status, 'findTripe.status');
+    if (findTripe.status === TRIP_STATUS_ENUM.CANCELED)
+      throw new ClientError('trip already cancelled');
     ResponseHandler.OkResponse(response, 'trip canceled');
     const driver = await DriverService.findOne({ _id: findTripe.driver });
     await DriverService.update(driver._id, {
       status: DRIVER_STATUS_ENUM.AVALIABLE,
     });
-    await RiderService.updateToPull(request.user.id, { trips: findTripe._id });
-    return TripModel.findByIdAndUpdate(findTripe._id, {
+    const rider = await RiderService.updateToPull(request.user.id, {
+      trips: findTripe._id,
+    });
+    await TripModel.findByIdAndUpdate(findTripe._id, {
       status: TRIP_STATUS_ENUM.CANCELED,
+    });
+    return NotificationHelper.notifyUser(rider, {
+      type: 'trips',
+      reason: 'trip canceled',
+      findTrip: findTripe,
     });
   };
   public getTrip = async (request: Request, response: Response) => {
@@ -375,23 +385,12 @@ class TripController {
       { $push: { trips: createTrip._id } },
       { new: true }, // Option to return the updated document
     );
-    /**
-     * todo
-     * send email to admin
-     */
-    const pickUpLocationString = await Maps.getLocationFromCoordinates(
-      createTrip.pickUpLocation.latitude,
-      createTrip.pickUpLocation.longitude,
-    );
-    const dropOffLocationSring = await Maps.getLocationFromCoordinates(
-      createTrip.dropOffLocation.latitude,
-      createTrip.dropOffLocation.longitude,
-    );
-    return TripEmail.sendTripBookedEmail({
-      firstName: findUserAgaian.firstName,
-      dropOffLocation: dropOffLocationSring,
-      pickUpLocation: pickUpLocationString,
-      vehicle: findDriver.vehicle.model,
+
+    return NotificationHelper.notifyUser(findUserAgaian, {
+      type: 'trips',
+      reason: 'trip confirmed',
+      findTrip: createTrip,
+      driverVehicle: findDriver.vehicle.model,
     });
   };
 }

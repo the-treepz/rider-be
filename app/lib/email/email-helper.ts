@@ -13,5 +13,8 @@ const EmailHelper = {
   gettripBookenEmail() {
     return ['tina@treepz.com'];
   },
+  gettripCancelledEmail() {
+    return ['tina@treepz.com'];
+  },
 };
 export default EmailHelper;
