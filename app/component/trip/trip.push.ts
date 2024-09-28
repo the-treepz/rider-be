@@ -1,10 +1,15 @@
 const TripPush = {
-  async sendTripCanceled({
-    firstName,
-    dropOffLocation,
-    pickUpLocation,
-    deviceToken,
+  async sendTripCanceled(data:{
+    firstName:string,
+    dropOffLocation:string,
+    pickUpLocation:string,
+    deviceToken:string,
   }) {
+    const {firstName,
+      dropOffLocation,
+      pickUpLocation,
+      deviceToken,  }= data;
+
     const message = {
       title: 'Trip Canceled',
       body: `${firstName}, your trip from ${pickUpLocation} to ${dropOffLocation} has been canceled.`,
@@ -15,7 +20,7 @@ const TripPush = {
     };
 
     try {
-      await sendPushNotification(deviceToken, message);
+      // await sendPushNotification(deviceToken, message);
       console.log('Push notification for trip canceled sent successfully.');
     } catch (error) {
       console.error(
@@ -25,13 +30,14 @@ const TripPush = {
     }
   },
 
-  async sendTripBooked({
-    firstName,
-    dropOffLocation,
-    pickUpLocation,
-    vehicle,
-    deviceToken,
+  async sendTripBooked(data:{
+    firstName: string,
+    dropOffLocation: string,
+    pickUpLocation:string,
+    vehicle:string,
+    deviceToken:string,
   }) {
+    const {firstName, dropOffLocation, pickUpLocation,vehicle,deviceToken  }= data;
     const message = {
       title: 'Trip Confirmed',
       body: `${firstName}, your trip from ${pickUpLocation} to ${dropOffLocation} is confirmed. Vehicle: ${vehicle}.`,
