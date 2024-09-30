@@ -4,7 +4,6 @@ import ResponseHandler from '../../lib/response-handler';
 import RiderModel from './repository/rider.model';
 import RiderService from './rider.service';
 import { StatusCodes } from 'http-status-codes';
-import { NotFoundError } from '../../exception/not-found.error';
 
 class RiderController {
   public deviceToken = async (request: Request, response: Response) => {
@@ -26,8 +25,10 @@ class RiderController {
     );
   };
   public get = async (request: Request, response: Response) => {
-    const user = await RiderService.findOne({ _id: request.user.id });
-    if (!user) throw new NotFoundError('user does not exist');
+    const user = await RiderService.handleFindOne(
+      { _id: request.user.id },
+      true,
+    );
     return ResponseHandler.SuccessResponse(
       response,
       StatusCodes.OK,
