@@ -45,7 +45,7 @@ const RiderSchema = new Schema(
         sms: { type: Boolean, default: true },
         push: { type: Boolean, default: true },
       },
-      treepzProducts: {
+      products: {
         email: { type: Boolean, default: false },
         sms: { type: Boolean, default: false },
         push: { type: Boolean, default: false },

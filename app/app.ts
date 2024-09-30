@@ -15,6 +15,8 @@ import RiderRoute from './component/user/rider.route';
 import DriverRoute from './component/driver/driver.route';
 import VerificationRoute from './component/verification/verification.route';
 import NotificationRoute from './component/notification/notification.route';
+import WalletRoute from './component/wallet/wallet.route';
+import TransactionRoute from './component/transaction/transaction.route';
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ class App {
   public tripRoute: TripRoute = new TripRoute();
   public notificationRoute: NotificationRoute = new NotificationRoute();
   public verificationRoute: VerificationRoute = new VerificationRoute();
+  public walletRoute: WalletRoute = new WalletRoute();
+  public transactionRoute: TransactionRoute = new TransactionRoute();
   constructor() {
     this.app = express();
     this.config();
@@ -33,8 +37,10 @@ class App {
     this.businessRoute.routes(this.app);
     this.driverRoute.routes(this.app);
     this.notificationRoute.routes(this.app);
+    this.transactionRoute.routes(this.app);
     this.tripRoute.routes(this.app);
     this.verificationRoute.routes(this.app);
+    this.walletRoute.routes(this.app);
     this.app.disable('x-powered-by');
     this.app.set('trust proxy', true);
     this.app.get('/', welcomeMessage);

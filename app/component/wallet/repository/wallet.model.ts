@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 import { WalletDocument } from './wallet.document';
-import { WalletModelInterface } from './interface/wallet-model.interface';
-import { ENVIRONMENT } from '../../config/secrets';
+import { WalletModelInterface } from '../interface/wallet-model.interface';
+import { ENVIRONMENT } from '../../../config/secrets';
 
 const WaletSchema = new Schema(
   {

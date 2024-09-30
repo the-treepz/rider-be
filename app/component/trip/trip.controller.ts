@@ -1,21 +1,20 @@
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 import TripService from './trip.service';
-import { ClientError } from '../../exception/client.error';
+import {ClientError} from '../../exception/client.error';
 import ResponseHandler from '../../lib/response-handler';
 import RiderService from '../user/rider.service';
-import TripModel, { TRIP_STATUS_ENUM } from './repository/trip.model';
+import TripModel, {TRIP_STATUS_ENUM} from './repository/trip.model';
 import RiderModel from '../user/repository/rider.model';
-import { CreateTripInterface, TripInterface } from './interface/trip.interface';
-import DriverModel, {
-  DRIVER_STATUS_ENUM,
-} from '../driver/repository/driver.model';
+import {CreateTripInterface, TripInterface} from './interface/trip.interface';
+import DriverModel, {DRIVER_STATUS_ENUM,} from '../driver/repository/driver.model';
 import SharedHelper from '../../lib/shared.helper';
-import WalletModel from '../wallet/wallet.model';
+import WalletModel from '../wallet/repository/wallet.model';
 import TripHelper from './helper/trip.helper';
 import DriverService from '../driver/driver.service';
 import Maps from '../../maps';
 import NotificationHelper from '../notification/notification.helper';
-import { NotFoundError } from '../../exception/not-found.error';
+import {NotFoundError} from '../../exception/not-found.error';
+import TransactionModel from '../transaction/repository/transaction.model';
 
 class TripController {
   public dailyCheckIn = async (request: Request, response: Response) => {
@@ -92,7 +91,6 @@ class TripController {
   };
   public getTrips = async (request: Request, response: Response) => {
     const trips = await TripService.getTrips(request.user.id);
-    console.log(trips, 'the tri');
     return ResponseHandler.OkResponse(response, 'Trips fetched successfully', {
       trips,
     });
@@ -103,12 +101,9 @@ class TripController {
       checkOutTime: null,
       checkInType: 'Daily',
     });
-    console.log(getTrip, 'getTrip');
     if (getTrip) {
       ResponseHandler.OkResponse(response, 'check out succesful');
-      const wh = await TripService.dailyCheckOut(request.user.id);
-      console.log(wh, 'gegg');
-      return wh;
+      return  TripService.dailyCheckOut(request.user.id);
     }
     throw new NotFoundError('no trip to be checked out from');
   };
@@ -219,7 +214,6 @@ class TripController {
       finalFare: fareDetails.estimatedFare, // Same fare for all drivers
       currency: 'NGN',
     }));
-
     return ResponseHandler.OkResponse(response, 'FETCHED available drivers', {
       tripDistance: fareDetails.distance, // Distance for the trip
       estimatedTripFare: fareDetails.estimatedFare, // Base fare for the trip
@@ -236,7 +230,6 @@ class TripController {
     // 2. Check if the user is the rider of the trip
     if (findTripe.rider._id.toString() !== request.user.id)
       throw new ClientError('You are not authorized to cancel this trip.');
-    console.log(findTripe.status, 'findTripe.status');
     if (findTripe.status === TRIP_STATUS_ENUM.CANCELED)
       throw new ClientError('trip already cancelled');
     ResponseHandler.OkResponse(response, 'trip canceled');
@@ -335,11 +328,6 @@ class TripController {
     const finalFare = totalFare + totalFare;
     if (findUserAgaian.wallet.amount < finalFare)
       throw new ClientError('Insufficient funds in wallet.');
-    await WalletModel.findByIdAndUpdate(
-      findUserAgaian.wallet._id,
-      { amount: findUserAgaian.wallet.amount - finalFare },
-      { new: true },
-    );
     const tripData: {
       pickUpLocation: any;
       dropOffLocation: any;
@@ -388,6 +376,19 @@ class TripController {
         },
       },
     });
+    await WalletModel.findByIdAndUpdate(
+      findUserAgaian.wallet._id,
+      { amount: findUserAgaian.wallet.amount - finalFare },
+      { new: true },
+    );
+    console.log(findUserAgaian, 'findUserAgaianfindUserAgaian');
+    await TransactionModel.create({
+      wallet: findUserAgaian.wallet._id,
+      type: 'Debit',
+      amount: finalFare,
+      description: 'Payment for trip',
+      trip: createTrip._id,
+    });
     await RiderModel.findByIdAndUpdate(
       request.user.id,
       { $push: { trips: createTrip._id } },
@@ -398,7 +399,6 @@ class TripController {
       { $push: { trips: createTrip._id } },
       { new: true }, // Option to return the updated document
     );
-
     return NotificationHelper.notifyUser(findUserAgaian, {
       type: 'trips',
       reason: 'trip confirmed',
