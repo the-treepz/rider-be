@@ -14,6 +14,12 @@ class WalletRoute {
         asyncHandler(requireAuthorization),
         asyncHandler(this.walletController.get),
       );
+    app
+      .route(`${GET_WALLET}`)
+      .post(
+        asyncHandler(requireAuthorization),
+        asyncHandler(this.walletController.fund),
+      );
   };
 }
 

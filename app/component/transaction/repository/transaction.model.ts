@@ -16,6 +16,7 @@ const TransactionSchema = new Schema(
     amount: { type: Number, required: true },
     description: String,
     trip: { type: Schema.Types.ObjectId, ref: 'Trip' },
+    reference: String,
   },
   { timestamps: true },
 );

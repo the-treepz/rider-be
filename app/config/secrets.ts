@@ -69,3 +69,12 @@ export const TREEPZ_SENDGRID_API_KEY = throwIfUndefined(
   process.env.TREEPZ_SENDGRID_API_KEY,
   'TREEPZ_SENDGRID_API_KEY',
 );
+
+throwIfUndefined(
+  process.env.TREEPZ_PAYSTACK_DEV_SECRET_KEY,
+  'TREEPZ_PAYSTACK_DEV_SECRET_KEY',
+);
+throwIfUndefined(
+  process.env.TREEPZ_PAYSTACK_SECRET_KEY,
+  'TREEPZ_PAYSTACK_SECRET_KEY',
+);

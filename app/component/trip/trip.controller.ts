@@ -1,19 +1,21 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import TripService from './trip.service';
-import {ClientError} from '../../exception/client.error';
+import { ClientError } from '../../exception/client.error';
 import ResponseHandler from '../../lib/response-handler';
 import RiderService from '../user/rider.service';
-import TripModel, {TRIP_STATUS_ENUM} from './repository/trip.model';
+import TripModel, { TRIP_STATUS_ENUM } from './repository/trip.model';
 import RiderModel from '../user/repository/rider.model';
-import {CreateTripInterface, TripInterface} from './interface/trip.interface';
-import DriverModel, {DRIVER_STATUS_ENUM,} from '../driver/repository/driver.model';
+import { CreateTripInterface, TripInterface } from './interface/trip.interface';
+import DriverModel, {
+  DRIVER_STATUS_ENUM,
+} from '../driver/repository/driver.model';
 import SharedHelper from '../../lib/shared.helper';
 import WalletModel from '../wallet/repository/wallet.model';
 import TripHelper from './helper/trip.helper';
 import DriverService from '../driver/driver.service';
 import Maps from '../../maps';
 import NotificationHelper from '../notification/notification.helper';
-import {NotFoundError} from '../../exception/not-found.error';
+import { NotFoundError } from '../../exception/not-found.error';
 import TransactionModel from '../transaction/repository/transaction.model';
 
 class TripController {
@@ -103,7 +105,7 @@ class TripController {
     });
     if (getTrip) {
       ResponseHandler.OkResponse(response, 'check out succesful');
-      return  TripService.dailyCheckOut(request.user.id);
+      return TripService.dailyCheckOut(request.user.id);
     }
     throw new NotFoundError('no trip to be checked out from');
   };
@@ -113,7 +115,7 @@ class TripController {
       throw new ClientError(
         'No ongoing weekly check-ins found for this employee.',
       );
-    const updatedTrips = await Promise.all(
+    await Promise.all(
       trips.map(async (trip: { _id: TripInterface['_id'] }) => {
         return TripService.weeklyCheckOut(request.user.id);
       }),
@@ -381,7 +383,6 @@ class TripController {
       { amount: findUserAgaian.wallet.amount - finalFare },
       { new: true },
     );
-    console.log(findUserAgaian, 'findUserAgaianfindUserAgaian');
     await TransactionModel.create({
       wallet: findUserAgaian.wallet._id,
       type: 'Debit',
