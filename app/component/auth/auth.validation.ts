@@ -51,8 +51,8 @@ const AuthValidation = {
     next: NextFunction,
   ) {
     const schema = Joi.object({
-      oldPassword: Joi.string().email().label('old Password').required(),
-      newPassword: Joi.string().email().label('new Password').required(),
+      oldPassword: Joi.string().label('old Password').required(),
+      newPassword: Joi.string().label('new Password').required(),
     });
     return AppValidation.bodyBaseValidator(schema, request, response, next);
   },
